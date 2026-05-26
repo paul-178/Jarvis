@@ -169,6 +169,23 @@ body::after {
   .goal-ticker-meta { font-size: 10px; padding: 2px 7px; }
 }
 
+/* ===== Component: Info Bar (date / time / weather) ===== */
+.info-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2px;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-tertiary);
+}
+.info-bar-left { display: flex; align-items: center; gap: 6px; }
+.info-bar-date { color: var(--text-secondary); }
+.info-bar-sep  { opacity: 0.35; }
+.info-bar-time { font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.info-bar-weather { color: var(--text-secondary); }
+@media (max-width: 480px) { .info-bar { font-size: 11px; } }
+
 /* ===== Component 3: Day Ring ===== */
 .day-ring-wrap {
   display: flex; flex-wrap: wrap;
@@ -599,6 +616,15 @@ body::after {
 <div class="page">
 
   <h1 class="dash-title">Paul's Dashboard</h1>
+
+  <div class="info-bar" id="infoBar">
+    <div class="info-bar-left">
+      <span class="info-bar-date" id="infoDate"></span>
+      <span class="info-bar-sep">·</span>
+      <span class="info-bar-time" id="infoTime"></span>
+    </div>
+    <span class="info-bar-weather" id="infoWeather" style="display:none"></span>
+  </div>
 
   <div class="ticker-row">
     <div class="goal-ticker" id="goalTicker" aria-live="polite" aria-atomic="true">
@@ -1319,6 +1345,70 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+</script>
+<script>
+(function () {
+  var DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateEl    = document.getElementById('infoDate');
+  var timeEl    = document.getElementById('infoTime');
+  var weatherEl = document.getElementById('infoWeather');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateClock() {
+    var now = new Date();
+    if (dateEl) dateEl.textContent = DAYS[now.getDay()] + ', ' + now.getDate() + ' ' + MONTHS[now.getMonth()];
+    if (timeEl) timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  var WMO = {
+    0:'☀️', 1:'🌤️', 2:'🌤️', 3:'☁️',
+    45:'🌫️', 48:'🌫️',
+    51:'🌦️', 53:'🌦️', 55:'🌦️', 56:'🌦️', 57:'🌦️',
+    61:'🌧️', 63:'🌧️', 65:'🌧️', 66:'🌧️', 67:'🌧️',
+    71:'❄️',  73:'❄️',  75:'❄️',  77:'❄️',
+    80:'🌧️', 81:'🌧️', 82:'🌧️',
+    85:'🌨️', 86:'🌨️',
+    95:'⛈️', 96:'⛈️', 99:'⛈️'
+  };
+
+  function fetchWeather(lat, lon) {
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat +
+          '&longitude=' + lon + '&current=temperature_2m,weather_code&timezone=auto')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var c = d && d.current;
+        if (!c) return;
+        var emoji = WMO[c.weather_code] || '';
+        var temp  = Math.round(c.temperature_2m);
+        if (weatherEl) {
+          weatherEl.textContent = emoji + ' ' + temp + '°C';
+          weatherEl.style.display = '';
+        }
+      })
+      .catch(function() {
+        if (weatherEl) weatherEl.style.display = 'none';
+      });
+  }
+
+  function getAndFetch() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) { fetchWeather(pos.coords.latitude, pos.coords.longitude); },
+        function()    { fetchWeather(47.5596, 7.5886); },
+        { timeout: 8000 }
+      );
+    } else {
+      fetchWeather(47.5596, 7.5886);
+    }
+  }
+
+  getAndFetch();
+  setInterval(getAndFetch, 15 * 60 * 1000);
+})();
 </script>
 </body>
 </html>
