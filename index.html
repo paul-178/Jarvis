@@ -169,22 +169,26 @@ body::after {
   .goal-ticker-meta { font-size: 10px; padding: 2px 7px; }
 }
 
-/* ===== Component: Info Bar (date / time / weather) ===== */
-.info-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2px;
-  margin-bottom: 10px;
+/* ===== Top bar: weather + date/time ===== */
+.topbar-info {
+  display: flex; align-items: center; gap: 7px;
+  margin-right: auto;
   font-family: var(--font-mono);
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--text-tertiary);
+  font-size: 11.5px; font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
-.info-bar-left { display: flex; align-items: center; gap: 6px; }
-.info-bar-date { color: var(--text-secondary); }
-.info-bar-sep  { opacity: 0.35; }
-.info-bar-time { font-variant-numeric: tabular-nums; color: var(--text-primary); }
-.info-bar-weather { color: var(--text-secondary); }
-@media (max-width: 480px) { .info-bar { font-size: 11px; } }
+.topbar-info-weather {
+  color: rgba(255, 255, 255, 0.80);
+  transition: opacity 0.4s;
+}
+.topbar-info-sep { color: rgba(255, 255, 255, 0.20); }
+.topbar-info-datetime {
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.45);
+}
+@media (max-width: 480px) { .topbar-info { font-size: 10.5px; gap: 5px; } }
+@media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
 /* ===== Component 3: Day Ring ===== */
 .day-ring-wrap {
@@ -616,15 +620,6 @@ body::after {
 <div class="page">
 
   <h1 class="dash-title">Paul's Dashboard</h1>
-
-  <div class="info-bar" id="infoBar">
-    <div class="info-bar-left">
-      <span class="info-bar-date" id="infoDate"></span>
-      <span class="info-bar-sep">·</span>
-      <span class="info-bar-time" id="infoTime"></span>
-    </div>
-    <span class="info-bar-weather" id="infoWeather" style="display:none"></span>
-  </div>
 
   <div class="ticker-row">
     <div class="goal-ticker" id="goalTicker" aria-live="polite" aria-atomic="true">
@@ -1350,20 +1345,6 @@ document.addEventListener('DOMContentLoaded', function () {
 (function () {
   var DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var dateEl    = document.getElementById('infoDate');
-  var timeEl    = document.getElementById('infoTime');
-  var weatherEl = document.getElementById('infoWeather');
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-
-  function updateClock() {
-    var now = new Date();
-    if (dateEl) dateEl.textContent = DAYS[now.getDay()] + ', ' + now.getDate() + ' ' + MONTHS[now.getMonth()];
-    if (timeEl) timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-
   var WMO = {
     0:'☀️', 1:'🌤️', 2:'🌤️', 3:'☁️',
     45:'🌫️', 48:'🌫️',
@@ -1374,6 +1355,17 @@ document.addEventListener('DOMContentLoaded', function () {
     85:'🌨️', 86:'🌨️',
     95:'⛈️', 96:'⛈️', 99:'⛈️'
   };
+  var weatherEl, datetimeEl;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateClock() {
+    if (!datetimeEl) return;
+    var now = new Date();
+    datetimeEl.textContent =
+      DAYS[now.getDay()] + ', ' + now.getDate() + ' ' + MONTHS[now.getMonth()] +
+      '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+  }
 
   function fetchWeather(lat, lon) {
     fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat +
@@ -1381,16 +1373,12 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function(r) { return r.json(); })
       .then(function(d) {
         var c = d && d.current;
-        if (!c) return;
-        var emoji = WMO[c.weather_code] || '';
-        var temp  = Math.round(c.temperature_2m);
-        if (weatherEl) {
-          weatherEl.textContent = emoji + ' ' + temp + '°C';
-          weatherEl.style.display = '';
-        }
+        if (!c || !weatherEl) return;
+        weatherEl.textContent = (WMO[c.weather_code] || '') + ' ' + Math.round(c.temperature_2m) + '°C';
+        weatherEl.style.opacity = '1';
       })
       .catch(function() {
-        if (weatherEl) weatherEl.style.display = 'none';
+        if (weatherEl) weatherEl.style.opacity = '0';
       });
   }
 
@@ -1406,8 +1394,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  getAndFetch();
-  setInterval(getAndFetch, 15 * 60 * 1000);
+  // topbar.js is defer'd: it runs and injects #topbar before DOMContentLoaded fires,
+  // so this listener is guaranteed to find the element.
+  document.addEventListener('DOMContentLoaded', function () {
+    var topbar = document.getElementById('topbar');
+    if (!topbar) return;
+
+    var info = document.createElement('div');
+    info.id = 'topbarInfo';
+    info.className = 'topbar-info';
+    info.innerHTML =
+      '<span class="topbar-info-weather" id="infoWeather" style="opacity:0.25">—°C</span>' +
+      '<span class="topbar-info-sep">·</span>' +
+      '<span class="topbar-info-datetime" id="infoDatetime"></span>';
+    topbar.insertBefore(info, topbar.firstChild);
+
+    weatherEl  = document.getElementById('infoWeather');
+    datetimeEl = document.getElementById('infoDatetime');
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    getAndFetch();
+    setInterval(getAndFetch, 15 * 60 * 1000);
+  });
 })();
 </script>
 </body>
