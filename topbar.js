@@ -36,15 +36,7 @@
   text-decoration: none; color: #FAFAFA;
   -webkit-tap-highlight-color: transparent;
 }
-.topbar-water-pill .topbar-pill-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #7DD3FC; flex-shrink: 0;
-}
-.topbar-water-pill.warn .topbar-pill-dot { background: #fbbf24; }
-.topbar-water-pill.miss .topbar-pill-dot {
-  background: #ff8a8a;
-  animation: topbar-miss-pulse 1.6s ease-in-out infinite;
-}
+.topbar-water-emoji { font-size: 14px; line-height: 1; flex-shrink: 0; }
 @keyframes topbar-miss-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
   50%      { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
@@ -152,7 +144,7 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
 <header class="topbar" id="topbar" role="navigation" aria-label="Quick actions">
   <div class="topbar-water-wrap">
     <a href="health.html#water" class="topbar-water-pill" id="topbarWater" aria-label="Water progress">
-      <span class="topbar-pill-dot"></span>
+      <span class="topbar-water-emoji">💧</span>
       <span class="topbar-pill-count" id="topbarWaterCount">0/0</span>
     </a>
     <button class="topbar-water-add" id="topbarWaterAdd" aria-label="Log one drink" type="button">+</button>
