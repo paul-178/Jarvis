@@ -3,696 +3,373 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#FFD080">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Paul's Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(235,235,245,0.6);
-  --text-tertiary: rgba(235,235,245,0.3);
-  --success: #30D158;
-  --warning: #FF9F0A;
-  --danger: #FF453A;
+  --bg-page: linear-gradient(155deg, #FFECD2 0%, #FFD080 55%, #F4A040 100%);
+  --bg-card: rgba(255, 250, 228, 0.90);
+  --bg-card-hero: linear-gradient(155deg, #C0EFA0 0%, #D8F0C0 28%, #FFF8DE 65%, #FFF0C8 100%);
+  --bg-tile: rgba(255, 244, 212, 0.88);
+  --border-card: rgba(210, 148, 42, 0.20);
+  --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
+  --text-primary: #1C0A00;
+  --text-secondary: rgba(78, 44, 6, 0.72);
+  --text-tertiary: rgba(115, 72, 10, 0.48);
+  --text-label: rgba(118, 76, 10, 0.52);
+  --accent: #FF6B2B;
+  --accent-orange: #FF8C1A;
+  --accent-green: #2CA83C;
+  --ring-fill: #F04848;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius-card: 28px;
+  --radius-tile: 18px;
 }
-
 * { box-sizing: border-box; }
-html, body {
-  margin: 0; padding: 0;
-  background: #000000;
-  color: var(--text-secondary);
-  font-family: var(--font);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-body {
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  padding: max(28px, env(safe-area-inset-top)) 20px 60px;
-}
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(circle at 82% 14%, rgba(224, 118, 88, 0.16), transparent 45%),
-    radial-gradient(circle at 18% 90%, rgba(180, 180, 200, 0.06), transparent 50%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: -2;
-  animation: drift 36s ease-in-out infinite alternate;
-}
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.014) 1px, transparent 1px);
-  background-size: 3px 3px;
-  pointer-events: none;
-  z-index: -1;
-}
-@keyframes drift {
-  0%   { transform: translate3d(0,0,0); }
-  100% { transform: translate3d(-22px, 14px, 0); }
-}
+html, body { margin: 0; padding: 0; min-height: 100vh; font-family: var(--font); -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
+body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidden; }
 
-.page {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* ===== Component 1: page title ===== */
-.dash-title {
-  margin: 0 0 14px;
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(235,235,245,0.75) 120%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-@media (max-width: 480px) { .dash-title { font-size: 28px; } }
-
-/* ===== Component 2: Goal Ticker ===== */
-.ticker-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
-  margin-bottom: 18px;
-}
-.goal-ticker {
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; gap: 10px;
-  padding: 7px 12px;
-  border-radius: 12px;
-  background: #1C1C1E;
-  border: 0.5px solid rgba(84,84,88,0.45);
-}
-.goal-ticker-led { display: inline-flex; align-items: center; }
-.goal-ticker-led-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #30D158;
-  box-shadow: 0 0 8px rgba(48,209,88,0.65);
-  animation: led-pulse 1.6s ease-in-out infinite;
-}
-@keyframes led-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.45; transform: scale(0.85); }
-}
-.goal-ticker-label {
-  font-family: var(--font-mono);
-  font-size: 9.5px; font-weight: 800;
-  letter-spacing: 0.18em;
-  color: var(--text-tertiary);
-}
-.goal-ticker-stage {
-  position: relative; overflow: hidden;
-  flex: 1; height: 22px;
-}
-.goal-ticker-row {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 12.5px; font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-  white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.22s ease;
-}
-.goal-ticker-row.is-fading { opacity: 0; }
-.goal-ticker-status {
-  display: inline-flex; justify-content: center;
-  width: 18px;
-  color: var(--text-tertiary);
-}
-.goal-ticker-status[data-status="done"]    { color: var(--success); }
-.goal-ticker-status[data-status="pending"] { color: var(--text-tertiary); }
-.goal-ticker-text {
-  flex: 1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.goal-ticker-meta {
-  font-family: var(--font-mono);
-  font-size: 11px; font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-}
-@media (max-width: 480px) {
-  .goal-ticker { padding: 9px 12px; }
-  .goal-ticker-label { font-size: 9px; letter-spacing: 0.14em; }
-  .goal-ticker-row { font-size: 12px; }
-  .goal-ticker-meta { font-size: 10px; padding: 2px 7px; }
-}
-
-/* ===== Top bar: weather + date/time ===== */
+/* === topbar weather info (injected) === */
 .topbar-info {
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 5px;
   margin-right: auto;
   font-family: var(--font-mono);
-  font-size: 13px; font-weight: 600;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  white-space: nowrap; color: rgba(80, 48, 8, 0.72);
 }
-.topbar-info-weather {
-  color: rgba(235,235,245,0.85);
-  transition: opacity 0.4s;
-}
-.topbar-info-sep { color: rgba(84,84,88,0.8); }
-.topbar-info-datetime {
-  font-variant-numeric: tabular-nums;
-  color: rgba(235,235,245,0.4);
-}
-@media (max-width: 480px) { .topbar-info { font-size: 12px; gap: 5px; } }
+.topbar-info-weather { transition: opacity 0.4s; }
+.topbar-info-sep { color: rgba(160, 100, 20, 0.40); margin: 0 1px; }
+.topbar-info-datetime { color: rgba(100, 64, 10, 0.55); font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
-/* ===== Component 3: Day Ring ===== */
-.day-ring-wrap {
-  display: flex; flex-wrap: wrap;
-  align-items: center; justify-content: center;
-  gap: 26px;
-  padding: 22px;
-  margin-bottom: 22px;
-  border-radius: 18px;
-  background: #1C1C1E;
-  border: 0.5px solid rgba(84,84,88,0.45);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.55);
+/* === page layout === */
+.home-page { max-width: 920px; margin: 0 auto; padding: 12px 14px 32px; }
+
+/* === HERO CARD === */
+.hero-card {
+  background: var(--bg-card-hero);
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(180, 230, 140, 0.55);
+  box-shadow: var(--shadow-card);
+  padding: 26px 22px 20px;
+  margin-bottom: 12px;
+  display: flex; flex-direction: column; align-items: center;
 }
+
+/* day ring */
 .day-ring {
-  position: relative;
-  width: 168px; height: 168px;
-  flex-shrink: 0;
+  position: relative; width: 168px; height: 168px; flex-shrink: 0; margin-bottom: 14px;
 }
 .day-ring svg { width: 100%; height: 100%; display: block; }
-.day-ring-track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+.day-ring-track { fill: none; stroke: rgba(200, 165, 110, 0.22); stroke-width: 11; }
 .day-ring-fill {
-  fill: none;
-  stroke-width: 8;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: 60px 60px;
-  transition: stroke 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  fill: none; stroke: var(--ring-fill);
+  stroke-width: 11; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: 84px 84px;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 10px rgba(240, 72, 72, 0.38));
 }
 .day-ring-overlay {
   position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .day-ring-percent {
-  font-size: 40px; font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
-  color: var(--text-primary);
-  line-height: 1;
+  font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums; color: var(--text-primary);
 }
 .day-ring-phase {
-  margin-top: 5px;
-  font-family: var(--font-mono);
-  font-size: 9.5px; font-weight: 800;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--text-tertiary);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-top: 3px;
 }
 .day-ring-clock {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-tertiary);
-  margin-top: 2px;
-}
-.day-ring-text {
-  display: flex; flex-direction: column;
-  gap: 6px;
-  max-width: 280px;
-}
-.day-ring-status { font-size: 14px; font-weight: 700; color: var(--text-primary); }
-.day-ring-remaining { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-.day-ring-hours { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
-@media (max-width: 480px) {
-  .day-ring { width: 144px; height: 144px; }
-  .day-ring-percent { font-size: 32px; }
-  .day-ring-status { font-size: 13px; }
-}
-
-/* ===== Component 4: section + To Do List ===== */
-.section { margin-top: 8px; }
-.section-title {
-  font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--text-tertiary);
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 12px;
-}
-.section-title::before {
-  content: ''; width: 18px; height: 1px;
-  background: var(--text-tertiary); opacity: 0.6;
-}
-.section-title::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
-}
-
-.gm-card {
-  position: relative;
-  background: #1C1C1E;
-  border-radius: 18px;
-  border: 0.5px solid rgba(84,84,88,0.45);
-  padding: 20px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.55);
-  transition: background 0.3s ease-out;
-  overflow: hidden;
-}
-.gm-card.gm-all-done::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(48,209,88,0.08), transparent 60%);
-  pointer-events: none;
-}
-.gm-card.gm-all-done .gm-progress-num,
-.gm-card.gm-all-done .gm-progress-label { color: var(--success); }
-
-.gm-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px;
-  margin-bottom: 14px;
-  position: relative;
-}
-.gm-header-left { display: flex; flex-direction: column; }
-.gm-eyebrow {
-  font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--text-tertiary);
-  margin-bottom: 6px;
-}
-.gm-progress-row { display: flex; align-items: baseline; gap: 6px; }
-.gm-progress-num {
-  font-size: 42px; font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.045em;
-  color: var(--text-primary);
-  line-height: 1;
-}
-.gm-progress-total {
-  font-family: var(--font-mono);
-  font-size: 18px;
-  color: var(--text-tertiary);
-}
-.gm-progress-label {
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.10em; text-transform: uppercase;
-  color: var(--text-tertiary);
-  margin-left: 4px;
-}
-.gm-tomorrow-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
-.gm-tomorrow-count {
-  font-family: var(--font-mono);
-  font-size: 11px; font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-.gm-card-tomorrow .gm-progress-row { display: none; }
-
-.gm-streak {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: #2C2C2E;
-  border: 0.5px solid rgba(84,84,88,0.45);
-  color: var(--text-tertiary);
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.10em; text-transform: uppercase;
-  transition: background 0.25s, color 0.25s, border-color 0.25s;
-}
-.gm-streak-icon { font-size: 13px; }
-.gm-streak-num {
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-top: 2px;
   font-variant-numeric: tabular-nums;
 }
-.gm-streak.gm-streak-active {
-  background: rgba(255,159,10,0.12);
-  color: #FF9F0A;
-  border-color: rgba(255,159,10,0.35);
+
+/* hero status text */
+.hero-status { text-align: center; margin-bottom: 18px; }
+.hero-status-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+.hero-status-sub { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 2px; }
+.hero-status-remaining { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+
+/* stat tiles */
+.stat-tiles {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%;
 }
-.gm-streak.gm-streak-active .gm-streak-icon {
-  filter: drop-shadow(0 0 6px rgba(255,159,10,0.6));
+.stat-tile {
+  background: var(--bg-tile);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-tile);
+  padding: 12px 8px 10px; text-align: center;
+}
+.stat-tile-value {
+  font-size: 17px; font-weight: 800; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1.1;
+}
+.stat-tile-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-label); margin-top: 4px;
 }
 
-.gm-bar {
-  display: flex; gap: 4px;
-  height: 6px;
-  margin-bottom: 16px;
-}
-.gm-bar:empty { display: none; }
-.gm-bar-seg {
-  flex: 1;
-  background: rgba(84,84,88,0.35);
-  border-radius: 3px;
-  transition: background 0.3s, box-shadow 0.3s;
-}
-.gm-bar-seg-done {
-  background: #30D158;
-  box-shadow: 0 0 6px rgba(48,209,88,0.35);
+@media (max-width: 600px) {
+  .hero-card { padding: 20px 14px 16px; }
+  .day-ring { width: 140px; height: 140px; }
+  .day-ring-fill, .day-ring-track { transform-origin: 70px 70px; }
+  .day-ring-percent { font-size: 36px; }
+  .stat-tile-value { font-size: 14px; }
+  .stat-tile { padding: 10px 6px 8px; }
+  .stat-tiles { gap: 6px; }
 }
 
-.goal-list { list-style: none; margin: 0; padding: 0; }
+/* === SECTION ROW (3 cards) === */
+.section-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+@media (max-width: 700px) { .section-row { grid-template-columns: 1fr; } }
+
+/* === SECTION CARD === */
+.section-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 18px;
+}
+.section-card-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.section-icon { font-size: 17px; line-height: 1; }
+.section-card-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-label); flex: 1;
+}
+.section-link {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  text-decoration: none; white-space: nowrap; transition: opacity 0.15s;
+}
+.section-link:hover { opacity: 0.75; }
 .empty-state {
-  text-align: center;
-  font-size: 12px; font-style: italic;
-  color: var(--text-tertiary);
-  padding: 14px 0;
+  font-size: 12px; color: var(--text-tertiary); text-align: center;
+  padding: 8px 0 4px; font-style: italic;
 }
 
-.gm-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  background: #2C2C2E;
-  border: 0.5px solid rgba(84,84,88,0.40);
-  border-radius: 12px;
-  transition: background 0.3s ease-out, opacity 0.3s;
-  position: relative;
+/* === UPCOMING MINI === */
+.upcoming-list { list-style: none; margin: 0; padding: 0; }
+.upcoming-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 2px;
+  border-bottom: 1px solid rgba(200, 148, 42, 0.10);
 }
-.gm-row:hover { background: #3A3A3C; }
-.gm-row.gm-row-done {
-  opacity: 0.45;
-  background: rgba(48,209,88,0.06);
+.upcoming-row:last-child { border-bottom: none; }
+.upcoming-date {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  color: var(--text-tertiary); min-width: 38px;
 }
-.gm-row.gm-row-done .gm-text {
-  text-decoration: line-through;
-  text-decoration-color: rgba(255,255,255,0.4);
-}
-.gm-row.gm-row-queued {
-  background: rgba(255,159,10,0.10);
-  box-shadow: inset 3px 0 0 0 #FF9F0A;
-}
-.gm-row.gm-row-queued .gm-text { color: rgba(255,214,133,0.95); }
-.gm-row.is-drag-over { border-top: 2px solid #6BE3A4; }
-.gm-row.is-queue-flashing { animation: gm-queue-flash 0.48s ease-out; }
-@keyframes gm-queue-flash {
-  0%   { background: #2C2C2E; transform: scale(1); }
-  40%  { background: rgba(255,159,10,0.28); transform: scale(1.015); }
-  100% { background: #2C2C2E; transform: scale(1); }
+.upcoming-title { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+.upcoming-tag {
+  font-size: 10px; padding: 2px 7px; border-radius: 99px;
+  background: rgba(255, 200, 80, 0.32); color: rgba(120, 70, 0, 0.80); font-weight: 700;
 }
 
-.gm-handle {
-  width: 14px; flex-shrink: 0;
-  color: var(--text-tertiary);
-  font-weight: 700; font-size: 14px;
-  letter-spacing: -2px;
-  cursor: grab;
-  opacity: 0;
-  transition: opacity 0.2s;
-  user-select: none;
+/* === GOALS MINI === */
+.goals-mini-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.goals-mini-ring { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+.goals-mini-ring svg { width: 100%; height: 100%; display: block; }
+.gmr-track { fill: none; stroke: rgba(200, 158, 60, 0.22); stroke-width: 4; }
+.gmr-fill {
+  fill: none; stroke: var(--accent-orange);
+  stroke-width: 4; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: 22px 22px;
+  transition: stroke-dashoffset 0.5s;
 }
-.gm-row:hover .gm-handle { opacity: 1; }
-.gm-handle:active { cursor: grabbing; }
-
-.gm-check {
+.goals-mini-pct {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9.5px; font-weight: 800; color: var(--accent-orange);
+}
+.goals-mini-text { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.goals-mini-list { list-style: none; margin: 0; padding: 0; }
+.goals-mini-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 2px;
+  border-bottom: 1px solid rgba(200, 148, 42, 0.10);
+}
+.goals-mini-row:last-child { border-bottom: none; }
+.goals-mini-check {
   appearance: none; -webkit-appearance: none;
-  width: 22px; height: 22px; flex-shrink: 0;
-  margin: 0;
-  border: 1.5px solid rgba(84,84,88,0.75);
-  background: rgba(0,0,0,0.30);
-  border-radius: 7px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.25s;
+  width: 17px; height: 17px; flex-shrink: 0;
+  border: 1.5px solid rgba(160, 110, 28, 0.40);
+  background: rgba(255, 240, 198, 0.60);
+  border-radius: 5px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s; position: relative;
 }
-.gm-check:checked {
-  background: #30D158;
-  border-color: #30D158;
-  box-shadow: 0 0 12px rgba(48,209,88,0.35);
-}
-.gm-check:checked::after {
-  content: '';
-  position: absolute; left: 6px; top: 2px;
-  width: 6px; height: 11px;
-  border: solid #0A0A0B;
-  border-width: 0 2.5px 2.5px 0;
+.goals-mini-check:checked { background: var(--accent-orange); border-color: var(--accent-orange); }
+.goals-mini-check:checked::after {
+  content: ''; position: absolute; left: 5px; top: 2px;
+  width: 5px; height: 8px; border: solid #FFF; border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-  animation: gm-check-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-@keyframes gm-check-pop {
-  from { transform: rotate(45deg) scale(0); }
-  to   { transform: rotate(45deg) scale(1); }
-}
-.gm-check:disabled { cursor: not-allowed; opacity: 0.55; }
+.goals-mini-label { font-size: 12.5px; color: var(--text-primary); flex: 1; }
+.goals-mini-label.done { text-decoration: line-through; color: var(--text-tertiary); }
 
-.gm-text {
-  flex: 1;
-  font-size: 14px;
-  color: var(--text-primary);
-  cursor: text;
-  outline: none;
-  border-radius: 4px;
-  padding: 2px 4px;
-  margin: -2px -4px;
+/* === GRADES MINI === */
+.grades-list { list-style: none; margin: 0; padding: 0; }
+.grades-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 2px; border-bottom: 1px solid rgba(200, 148, 42, 0.10);
 }
-.gm-text[contenteditable="true"] {
-  outline: 1px solid rgba(255,255,255,0.18);
-  background: rgba(0,0,0,0.28);
-}
+.grades-row:last-child { border-bottom: none; }
+.grades-subject { font-size: 12.5px; font-weight: 600; color: var(--text-primary); flex: 1; }
+.grades-avg { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.grades-avg.low { color: #D03030; }
+.grades-avg.pass { color: var(--accent-green); }
 
-.gm-queue-btn {
-  border: 0; background: transparent;
-  color: var(--text-tertiary);
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  opacity: 0.55;
-  transition: opacity 0.2s, color 0.2s, transform 0.1s;
+/* === MONEY CARD === */
+.money-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+.money-tile {
+  background: var(--bg-tile); border: 1px solid var(--border-card);
+  border-radius: 16px; padding: 12px 12px 10px;
 }
-.gm-queue-btn:hover { opacity: 1; }
-.gm-queue-btn.gm-queue-active {
-  color: #FF9F0A;
-  opacity: 1;
-  filter: drop-shadow(0 0 4px rgba(255,159,10,0.65));
+.money-tile-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-label); margin-bottom: 4px;
 }
-.gm-queue-btn:disabled { cursor: not-allowed; opacity: 0.3; }
-
-.goal-delete {
-  border: 0; background: transparent;
-  color: var(--text-tertiary);
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0 4px;
-  opacity: 0.5;
-  transition: opacity 0.2s, color 0.2s;
+.money-tile-value {
+  font-size: 16px; font-weight: 800; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
 }
-.gm-row:hover .goal-delete { opacity: 1; }
-.goal-delete:hover { color: var(--danger); }
-
-.gm-show-toggle {
-  width: 100%;
-  margin: 6px 0 0;
-  padding: 9px;
-  border: 0.5px dashed rgba(84,84,88,0.55);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text-tertiary);
-  font-family: inherit;
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+.money-tile-value.green { color: var(--accent-green); }
+.money-tile-value.orange { color: var(--accent-orange); }
+.money-subs-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-tile); border: 1px solid var(--border-card);
+  border-radius: 14px; padding: 10px 14px;
 }
-.gm-show-toggle:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.22); }
-
-.gm-push-btn {
-  width: 100%;
-  margin-top: 14px;
-  padding: 11px;
-  border: 0.5px dashed rgba(84,84,88,0.55);
-  border-radius: 12px;
-  background: transparent;
-  color: var(--text-tertiary);
-  font-family: inherit;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.10em; text-transform: uppercase;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-}
-.gm-push-btn:hover {
-  color: var(--text-primary);
-  border-color: rgba(84,84,88,0.75);
-  border-style: solid;
-  background: #2C2C2E;
-}
-
-.goal-input-wrap.gm-input-wrap {
-  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 0.5px solid rgba(84,84,88,0.45);
-}
-.gm-input {
-  flex: 1; min-width: 0;
-  padding: 11px 14px;
-  border: 0.5px solid rgba(84,84,88,0.55);
-  border-radius: 12px;
-  background: rgba(118,118,128,0.12);
-  color: var(--text-primary);
-  font-family: inherit; font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s;
-}
-.gm-input::placeholder { color: var(--text-tertiary); }
-.gm-input:focus { border-color: rgba(84,84,88,0.8); background: rgba(118,118,128,0.18); }
-
-.gm-add {
-  padding: 11px 20px;
-  border: 0; border-radius: 12px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #E8E5DD 100%);
-  color: #0A0A0B;
-  font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
-    0 2px 8px rgba(0,0,0,0.35),
-    0 8px 22px rgba(0,0,0,0.25);
-  transition: transform 0.1s, filter 0.15s;
-}
-.gm-add:hover { filter: brightness(1.06); transform: translateY(-1px); }
-.gm-add:active { transform: translateY(0) scale(0.97); }
-
-.gm-polish {
-  padding: 11px 18px;
-  border: 0.5px solid rgba(84,84,88,0.55);
-  border-radius: 12px;
-  background: #2C2C2E;
-  color: var(--text-primary);
-  font-family: inherit; font-size: 13px; font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease-out, border-color 0.3s ease-out;
-}
-.gm-polish:hover {
-  background: #3A3A3C;
-  border-color: rgba(84,84,88,0.75);
-}
-
-.gm-status {
-  flex-basis: 100%;
-  font-size: 11px;
-  color: var(--text-tertiary);
-  min-height: 14px;
-  margin-top: 4px;
-}
-.gm-status.gm-status-error { color: var(--danger); }
+.money-subs-label { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; color: var(--text-label); letter-spacing: 0.12em; text-transform: uppercase; flex: 1; }
+.money-subs-value { font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: var(--text-secondary); }
 
 @media (max-width: 480px) {
-  body { padding: max(20px, env(safe-area-inset-top)) 14px 50px; }
-  .gm-card { padding: 16px; }
-  .gm-progress-num { font-size: 36px; }
+  .home-page { padding: 8px 10px 28px; }
+  .section-card { padding: 14px; }
 }
 </style>
 </head>
 <body>
-<div class="page">
+<div class="home-page">
 
-  <h1 class="dash-title">Paul's Dashboard</h1>
-
-  <div class="ticker-row">
-    <div class="goal-ticker" id="goalTicker" aria-live="polite" aria-atomic="true">
-      <div class="goal-ticker-led"><span class="goal-ticker-led-dot"></span></div>
-      <div class="goal-ticker-label">GOALS</div>
-      <div class="goal-ticker-stage" id="goalTickerStage">
-        <div class="goal-ticker-row">
-          <span class="goal-ticker-status" data-status="">—</span>
-          <span class="goal-ticker-text">Loading…</span>
-        </div>
-      </div>
-      <div class="goal-ticker-meta" id="goalTickerMeta">0/0</div>
-    </div>
-  </div>
-
-  <div class="day-ring-wrap">
+  <!-- HERO CARD -->
+  <div class="hero-card">
     <div class="day-ring">
-      <svg viewBox="0 0 120 120">
-        <defs>
-          <filter id="dayRingGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2.4" result="b" />
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <circle class="day-ring-track" cx="60" cy="60" r="52" />
-        <circle class="day-ring-fill"  cx="60" cy="60" r="52" id="dayRingFill" filter="url(#dayRingGlow)" />
+      <svg viewBox="0 0 168 168">
+        <circle class="day-ring-track" cx="84" cy="84" r="72" />
+        <circle class="day-ring-fill"  cx="84" cy="84" r="72" id="dayRingFill" />
       </svg>
       <div class="day-ring-overlay">
-        <div class="day-ring-percent" id="dayRingPercent">—</div>
-        <div class="day-ring-phase"   id="dayRingPhase">—</div>
-        <div class="day-ring-clock"   id="dayRingClock">—</div>
+        <div class="day-ring-percent"  id="dayRingPercent">—</div>
+        <div class="day-ring-phase"    id="dayRingPhase">—</div>
+        <div class="day-ring-clock"    id="dayRingClock">—</div>
       </div>
     </div>
-    <div class="day-ring-text">
-      <div class="day-ring-status"    id="dayRingStatus">Loading…</div>
-      <div class="day-ring-remaining" id="dayRingRemaining">—</div>
-      <div class="day-ring-hours">6:00 AM – 10:00 PM</div>
+    <div class="hero-status">
+      <div class="hero-status-title"    id="heroTitle">Loading…</div>
+      <div class="hero-status-sub"      id="heroSub">—</div>
+      <div class="hero-status-remaining" id="heroRemaining">—</div>
+    </div>
+    <div class="stat-tiles">
+      <div class="stat-tile">
+        <div class="stat-tile-value" id="statGoals">0/0</div>
+        <div class="stat-tile-label">GOALS</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-value" id="statPending">–</div>
+        <div class="stat-tile-label">PENDING</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-value" id="statGrade">–</div>
+        <div class="stat-tile-label">AVG GRADE</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-value" id="statNetWorth">CHF –</div>
+        <div class="stat-tile-label">NET WORTH</div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">To Do List</div>
-
-    <!-- TODAY -->
-    <div class="gm-card" id="gmCardToday">
-      <div class="gm-header">
-        <div class="gm-header-left">
-          <div class="gm-eyebrow" id="todayLabel">Today —</div>
-          <div class="gm-progress-row">
-            <span class="gm-progress-num"   id="gmProgressNum">0</span>
-            <span class="gm-progress-total" id="gmProgressTotal">/ 0</span>
-            <span class="gm-progress-label" id="gmProgressLabel">no goals yet</span>
-          </div>
-        </div>
-        <div class="gm-streak" id="gmStreak">
-          <span class="gm-streak-icon">⚡</span>
-          <span class="gm-streak-num" id="gmStreakNum">0</span>
-          <span>day streak</span>
-        </div>
+  <!-- SECTION ROW -->
+  <div class="section-row">
+    <!-- UPCOMING -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-icon">📚</span>
+        <span class="section-card-title">UPCOMING (7 DAYS)</span>
+        <a href="acad.html" class="section-link">View all →</a>
       </div>
-      <div class="gm-bar" id="gmBar"></div>
-      <ul id="goalList" class="goal-list gm-list"></ul>
-      <div id="emptyState" class="empty-state">No goals for today yet — add one below.</div>
-      <button type="button" id="gmPushBtn" class="gm-push-btn" style="display:none;">Push remaining to tomorrow</button>
-      <div class="goal-input-wrap gm-input-wrap">
-        <input id="goalInput" class="gm-input" type="text" placeholder="Add a goal for today…" autocomplete="off">
-        <button type="button" id="goalAddBtn"    class="gm-add">+ Add</button>
-        <button type="button" id="goalPolishBtn" class="gm-polish">✨ Polish</button>
-        <div class="gm-status" id="polishStatus"></div>
-      </div>
+      <ul class="upcoming-list" id="upcomingList">
+        <li class="empty-state">Nothing due in the next 7 days. 🎉</li>
+      </ul>
     </div>
 
-    <!-- PLAN TOMORROW -->
-    <div class="gm-card gm-card-tomorrow" id="gmCardTomorrow">
-      <div class="gm-header">
-        <div class="gm-header-left">
-          <div class="gm-eyebrow" id="tomorrowLabel">Plan tomorrow —</div>
-          <div class="gm-tomorrow-sub">Write tonight, locked until 6 AM.</div>
+    <!-- TODAY'S GOALS -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-icon">🎯</span>
+        <span class="section-card-title">TODAY'S GOALS</span>
+        <a href="goals.html" class="section-link">Manage →</a>
+      </div>
+      <div class="goals-mini-header">
+        <div class="goals-mini-ring">
+          <svg viewBox="0 0 44 44">
+            <circle class="gmr-track" cx="22" cy="22" r="18" />
+            <circle class="gmr-fill"  cx="22" cy="22" r="18" id="goalsMiniRing" />
+          </svg>
+          <div class="goals-mini-pct" id="goalsMiniPct">0%</div>
         </div>
-        <div class="gm-tomorrow-count" id="gmTomorrowCount">0 planned</div>
+        <div class="goals-mini-text" id="goalsMiniText">0 / 0 goals today</div>
       </div>
-      <ul id="tomorrowList" class="goal-list gm-list"></ul>
-      <div id="tomorrowEmpty" class="empty-state">Nothing planned for tomorrow yet</div>
-      <div class="goal-input-wrap gm-input-wrap">
-        <input id="tomorrowInput" class="gm-input" type="text" placeholder="Add a goal for tomorrow…" autocomplete="off">
-        <button type="button" id="tomorrowAddBtn"    class="gm-add">+ Add</button>
-        <button type="button" id="tomorrowPolishBtn" class="gm-polish">✨ Polish</button>
-        <div class="gm-status" id="tomorrowStatus"></div>
+      <ul class="goals-mini-list" id="goalsMiniList"></ul>
+    </div>
+
+    <!-- GRADES -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-icon">📊</span>
+        <span class="section-card-title">GRADES</span>
+        <a href="acad.html#grades" class="section-link">Gradebook →</a>
       </div>
+      <ul class="grades-list" id="gradesList">
+        <li class="empty-state">No subjects added yet.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MONEY CARD -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <span class="section-icon">💰</span>
+      <span class="section-card-title">FINANCE</span>
+      <a href="finance.html" class="section-link">Details →</a>
+    </div>
+    <div class="money-tiles">
+      <div class="money-tile">
+        <div class="money-tile-label">NET WORTH</div>
+        <div class="money-tile-value green" id="moneyNetWorth">CHF –</div>
+      </div>
+      <div class="money-tile">
+        <div class="money-tile-label">LARGEST ACCOUNT</div>
+        <div class="money-tile-value" id="moneyLargest">–</div>
+      </div>
+    </div>
+    <div class="money-subs-row">
+      <span class="money-subs-label">Monthly Subscriptions</span>
+      <span class="money-subs-value" id="moneySubs">CHF –</span>
     </div>
   </div>
 
@@ -701,623 +378,261 @@ body::after {
 <script>
 (function () {
   'use strict';
-
-  // Paste your Anthropic key here to enable ✨ Polish. Empty = falls back to plain add.
-  const ANTHROPIC_API_KEY = '';
-
   const WAKE_HOUR  = 6;
   const SLEEP_HOUR = 22;
 
-  // ---------- storage helpers ----------
-  function storeGet(key) {
-    try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; }
-  }
-  function storeSet(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-    if (typeof key === 'string' && key.indexOf('goals:') === 0) {
-      window.dispatchEvent(new CustomEvent('goals-changed'));
-    }
-  }
-  function storeDelete(key) { try { localStorage.removeItem(key); } catch (e) {} }
-  function storeListKeys(prefix) {
-    const out = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.indexOf(prefix) === 0) out.push(k);
-    }
-    return out;
-  }
-
-  // ---------- date helpers ----------
   function pad2(n) { return String(n).padStart(2, '0'); }
-  function dateToKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-  function getActiveDateString() {
-    const now = new Date();
-    if (now.getHours() < 6) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - 1);
-      return dateToKey(d);
-    }
-    return dateToKey(now);
+  function dateKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+  function activeDate() {
+    const n = new Date();
+    if (n.getHours() < 6) { const d = new Date(n); d.setDate(d.getDate()-1); return d; }
+    return n;
   }
-  function getTomorrowDateString() {
-    const now = new Date();
-    const d = new Date(now);
-    if (now.getHours() >= 6) d.setDate(d.getDate() + 1);
-    return dateToKey(d);
-  }
-  function formatDate(yyyy_mm_dd) {
-    const parts = yyyy_mm_dd.split('-').map(Number);
-    const d = new Date(parts[0], parts[1] - 1, parts[2]);
-    const wk = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
-    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
-    return wk + ', ' + mo + ' ' + d.getDate();
-  }
+  function storeGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+  function storeSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  function esc(s) { return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  function todayKey()    { return 'goals:' + getActiveDateString(); }
-  function tomorrowKey() { return 'goals:' + getTomorrowDateString(); }
-
-  function getGoals(key) {
-    const g = storeGet(key);
-    return Array.isArray(g) ? g : [];
-  }
-  function setGoals(key, list) { storeSet(key, list); }
-
-  // ---------- rollover: pull undone older goals into today ----------
-  function rollover() {
-    const todayDateStr = getActiveDateString();
-    const todayK = 'goals:' + todayDateStr;
-    let today = getGoals(todayK);
-    const texts = new Set(today.map(g => g.text));
-
-    storeListKeys('goals:').forEach(k => {
-      const dateStr = k.slice('goals:'.length);
-      if (dateStr >= todayDateStr) return;
-      const old = getGoals(k);
-      old.forEach(g => {
-        if (!g.done && g.text && !texts.has(g.text)) {
-          today.push({ text: g.text, done: false });
-          texts.add(g.text);
-        }
-      });
-      storeDelete(k);
-    });
-    setGoals(todayK, today);
-  }
-
-  // ---------- streak ----------
-  function loadStreak() {
-    const s = storeGet('goal_streak_v1');
-    if (s && typeof s.count === 'number') return s;
-    return { count: 0, lastProcessedDate: '' };
-  }
-  function saveStreak(s) { storeSet('goal_streak_v1', s); }
-
-  function processStreak() {
-    const s = loadStreak();
-    const todayDateStr = getActiveDateString();
-    const keys = storeListKeys('goals:')
-      .map(k => k.slice('goals:'.length))
-      .filter(d => d < todayDateStr)
-      .sort();
-    keys.forEach(dateStr => {
-      if (s.lastProcessedDate && dateStr <= s.lastProcessedDate) return;
-      const list = getGoals('goals:' + dateStr);
-      if (list.length === 0) { /* don't break the streak on empty days */ }
-      else if (list.every(g => g.done)) s.count += 1;
-      else s.count = 0;
-      s.lastProcessedDate = dateStr;
-    });
-    saveStreak(s);
-  }
-
-  // ---------- Goal Ticker ----------
-  const tickerStage = document.getElementById('goalTickerStage');
-  const tickerMeta  = document.getElementById('goalTickerMeta');
-  let cycleIdx = 0;
-  let tickerTimer = null;
-
-  function buildTickerItems() {
-    const goals = getGoals(todayKey());
-    const total = goals.length;
-    const done  = goals.filter(g => g.done).length;
-    if (total === 0) return { items: [{ status: 'empty',   text: 'No goals set for today — add one to get rolling.' }], done, total };
-    if (done === total) return { items: [{ status: 'done', text: '✓ All goals done — solid day.' }], done, total };
-    const items = goals.filter(g => !g.done).map(g => ({ status: 'pending', text: g.text }));
-    return { items, done, total };
-  }
-
-  function statusGlyph(status) {
-    if (status === 'done') return '✓';
-    if (status === 'pending') return '○';
-    return '·';
-  }
-
-  let firstTick = true;
-  function tick() {
-    const { items, done, total } = buildTickerItems();
-    if (cycleIdx >= items.length) cycleIdx = 0;
-    const item = items[cycleIdx];
-    cycleIdx = (cycleIdx + 1) % items.length;
-    tickerMeta.textContent = done + '/' + total;
-
-    let row = tickerStage.querySelector('.goal-ticker-row');
-    if (!row) {
-      row = document.createElement('div');
-      row.className = 'goal-ticker-row';
-      row.innerHTML =
-        '<span class="goal-ticker-status"></span>' +
-        '<span class="goal-ticker-text"></span>';
-      tickerStage.appendChild(row);
-    }
-
-    const statusEl = row.querySelector('.goal-ticker-status');
-    const textEl   = row.querySelector('.goal-ticker-text');
-
-    const apply = () => {
-      statusEl.setAttribute('data-status', item.status);
-      statusEl.textContent = statusGlyph(item.status);
-      textEl.textContent = item.text;
-      row.classList.remove('is-fading');
-    };
-
-    if (firstTick) { apply(); firstTick = false; return; }
-    row.classList.add('is-fading');
-    setTimeout(apply, 220);
-  }
-
-  function startTicker() {
-    tick();
-    if (tickerTimer) clearInterval(tickerTimer);
-    tickerTimer = setInterval(tick, 5000);
-  }
-
-  window.addEventListener('goals-changed', () => {
-    cycleIdx = 0;
-    tick();
-  });
-
-  // ---------- Day Ring ----------
-  const PALETTE = [
-    [0,    [255, 216, 158]],
-    [12.5, [255, 205, 121]],
-    [25,   [255, 227, 143]],
-    [37.5, [255, 183, 106]],
-    [50,   [255, 149,  89]],
-    [62.5, [243, 111,  79]],
-    [75,   [226,  93, 122]],
-    [87.5, [123,  91, 176]],
-    [100,  [ 47,  58, 102]]
-  ];
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function paletteAt(p) {
-    if (p <= PALETTE[0][0]) return PALETTE[0][1];
-    if (p >= PALETTE[PALETTE.length - 1][0]) return PALETTE[PALETTE.length - 1][1];
-    for (let i = 0; i < PALETTE.length - 1; i++) {
-      const [p0, c0] = PALETTE[i];
-      const [p1, c1] = PALETTE[i + 1];
-      if (p >= p0 && p <= p1) {
-        const t = (p - p0) / (p1 - p0);
-        return [lerp(c0[0], c1[0], t), lerp(c0[1], c1[1], t), lerp(c0[2], c1[2], t)];
-      }
-    }
-    return [255,255,255];
-  }
-  function rgb(c) { return 'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')'; }
-
-  function formatClock(d) {
-    let h = d.getHours();
-    const m = d.getMinutes();
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12;
-    if (h === 0) h = 12;
-    return h + ':' + pad2(m) + ' ' + ampm;
-  }
-  function formatRemaining(totalMin) {
-    const h = Math.floor(totalMin / 60);
-    const m = Math.floor(totalMin % 60);
-    return h + 'h ' + m + 'm';
-  }
-
-  const C = 2 * Math.PI * 52;
+  // ---- Day Ring ----
+  const C = 2 * Math.PI * 72;
   const fillEl = document.getElementById('dayRingFill');
   fillEl.setAttribute('stroke-dasharray', C);
   fillEl.setAttribute('stroke-dashoffset', C);
 
+  function fmtClock(d) {
+    let h = d.getHours(); const m = d.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12; if (!h) h = 12;
+    return h + ':' + pad2(m) + ' ' + ap;
+  }
+  function fmtRemain(mins) {
+    const h = Math.floor(mins/60); const m = Math.floor(mins%60);
+    return (h ? h + 'h ' : '') + m + 'm';
+  }
+
   function updateDayRing() {
     const now = new Date();
-    const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-    const percentEl   = document.getElementById('dayRingPercent');
-    const phaseEl     = document.getElementById('dayRingPhase');
-    const clockEl     = document.getElementById('dayRingClock');
-    const statusEl    = document.getElementById('dayRingStatus');
-    const remainingEl = document.getElementById('dayRingRemaining');
+    const hours = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
+    const pctEl = document.getElementById('dayRingPercent');
+    const phaseEl = document.getElementById('dayRingPhase');
+    const clockEl = document.getElementById('dayRingClock');
+    const titleEl = document.getElementById('heroTitle');
+    const subEl   = document.getElementById('heroSub');
+    const remEl   = document.getElementById('heroRemaining');
 
-    clockEl.textContent = formatClock(now);
+    clockEl.textContent = fmtClock(now);
 
     if (hours < WAKE_HOUR) {
       fillEl.setAttribute('stroke-dashoffset', C);
-      fillEl.style.stroke = '#4D4B47';
-      percentEl.textContent = '—';
-      phaseEl.textContent   = 'SLEEPING';
-      statusEl.textContent  = '😴 Still sleeping';
-      const minsUntil = (WAKE_HOUR - hours) * 60;
-      remainingEl.textContent = formatRemaining(minsUntil) + ' until wake-up';
+      pctEl.textContent = '–'; phaseEl.textContent = 'SLEEPING';
+      titleEl.textContent = '😴 Still sleeping';
+      subEl.textContent = 'Wake up time approaching';
+      remEl.textContent = fmtRemain((WAKE_HOUR - hours) * 60) + ' until wake-up';
       return;
     }
-
     if (hours >= SLEEP_HOUR) {
       fillEl.setAttribute('stroke-dashoffset', 0);
-      fillEl.style.stroke = '#E25D7A';
-      percentEl.textContent = '100%';
-      phaseEl.textContent   = 'PAST BEDTIME';
-      statusEl.textContent  = '⚠️ Past bedtime';
-      remainingEl.textContent = 'Sleep!';
+      pctEl.textContent = '100%'; phaseEl.textContent = 'PAST BEDTIME';
+      titleEl.textContent = '⚠️ Past bedtime'; subEl.textContent = 'Time to sleep';
+      remEl.textContent = 'Sleep!'; return;
+    }
+    const span = SLEEP_HOUR - WAKE_HOUR;
+    const pct  = (hours - WAKE_HOUR) / span * 100;
+    fillEl.setAttribute('stroke-dashoffset', C * (1 - pct/100));
+    pctEl.textContent = Math.floor(pct) + '%';
+
+    let phase, title, sub;
+    if      (pct < 20)  { phase='MORNING';   title='☀️ Good morning';   sub='Fresh start'; }
+    else if (pct < 40)  { phase='MORNING';   title='⚡ Morning push';   sub='Stay focused'; }
+    else if (pct < 55)  { phase='MIDDAY';    title='🌞 Midday';         sub='Keep the momentum'; }
+    else if (pct < 70)  { phase='AFTERNOON'; title='🔥 Afternoon';      sub='Push through'; }
+    else if (pct < 85)  { phase='EVENING';   title='⏳ Winding down';   sub='Evening approaching'; }
+    else                { phase='EVENING';   title='🌙 Wrap it up';     sub='Almost bedtime'; }
+    phaseEl.textContent = phase; titleEl.textContent = title; subEl.textContent = sub;
+    remEl.textContent = fmtRemain((SLEEP_HOUR - hours) * 60) + ' of active time left';
+  }
+
+  // ---- Stat: Goals ----
+  function readGoalsStat() {
+    const goals = storeGet('goals:' + dateKey(activeDate())) || [];
+    const done = goals.filter(g => g.done).length;
+    document.getElementById('statGoals').textContent = done + '/' + goals.length;
+    return { goals, done };
+  }
+
+  // ---- Stat: Pending ----
+  function readPendingStat() {
+    const events = storeGet('acad:events') || [];
+    const now = Date.now(); const in7 = now + 7*24*3600*1000;
+    const n = events.filter(e => { const d = new Date(e.date).getTime(); return d >= now && d <= in7; }).length;
+    document.getElementById('statPending').textContent = n > 0 ? n : '–';
+    return n;
+  }
+
+  // ---- Stat: Grade ----
+  function readGradeStat() {
+    const subjects = storeGet('acad:grades') || [];
+    let sum = 0, cnt = 0;
+    subjects.forEach(s => (s.grades || []).forEach(g => { sum += +g.value; cnt++; }));
+    document.getElementById('statGrade').textContent = cnt ? (sum/cnt).toFixed(1) : '–';
+  }
+
+  // ---- Stat: Net Worth ----
+  function readNetWorthStat() {
+    const cats = ['bank','stocks','crypto','other'];
+    let total = 0;
+    cats.forEach(c => { (storeGet('nw:'+c)||[]).forEach(x => { total += +(x.amount||x.value||0); }); });
+    const cur = storeGet('nw_currency') || 'CHF';
+    const fmt = v => cur + ' ' + Math.round(v).toLocaleString('de-CH');
+    document.getElementById('statNetWorth').textContent = total ? fmt(total) : cur + ' –';
+    document.getElementById('moneyNetWorth').textContent = total ? fmt(total) : cur + ' –';
+    document.getElementById('moneyNetWorth').className = 'money-tile-value' + (total >= 0 ? ' green' : '');
+
+    // largest account
+    let largest = { name: '–', amt: 0 };
+    cats.forEach(c => {
+      (storeGet('nw:'+c)||[]).forEach(x => {
+        const a = +(x.amount||x.value||0);
+        if (a > largest.amt) largest = { name: x.name, amt: a };
+      });
+    });
+    document.getElementById('moneyLargest').textContent = largest.name !== '–' ? largest.name : '–';
+  }
+
+  // ---- Stat: Subs ----
+  function readSubsStat() {
+    const subs = storeGet('subs') || [];
+    const cur  = storeGet('nw_currency') || 'CHF';
+    let monthly = 0;
+    subs.forEach(s => {
+      const amt = +(s.amount || s.cost || 0);
+      if (!s.period || s.period === 'monthly') monthly += amt;
+      else if (s.period === 'yearly' || s.period === 'annual') monthly += amt / 12;
+      else if (s.period === 'weekly') monthly += amt * 52 / 12;
+      else if (s.period === 'quarterly') monthly += amt / 3;
+    });
+    document.getElementById('moneySubs').textContent = monthly > 0 ? cur + ' ' + monthly.toFixed(0) + ' / mo' : cur + ' –';
+  }
+
+  // ---- Goals mini ----
+  function loadGoalsMini() {
+    const { goals, done } = readGoalsStat();
+    const total = goals.length;
+    const pct   = total ? Math.round(done/total*100) : 0;
+    const GC    = 2 * Math.PI * 18;
+    const mFill = document.getElementById('goalsMiniRing');
+    mFill.setAttribute('stroke-dasharray', GC);
+    mFill.setAttribute('stroke-dashoffset', GC * (1 - pct/100));
+    document.getElementById('goalsMiniPct').textContent = pct + '%';
+    document.getElementById('goalsMiniText').textContent = done + ' / ' + total + ' goals today';
+
+    const listEl = document.getElementById('goalsMiniList');
+    listEl.innerHTML = '';
+    const k = 'goals:' + dateKey(activeDate());
+    if (goals.length === 0) {
+      listEl.innerHTML = '<li class="empty-state">No goals — <a href="goals.html" style="color:var(--accent)">add one →</a></li>';
       return;
     }
-
-    const span = SLEEP_HOUR - WAKE_HOUR;
-    const percent = (hours - WAKE_HOUR) / span * 100;
-    fillEl.setAttribute('stroke-dashoffset', C * (1 - percent / 100));
-    fillEl.style.stroke = rgb(paletteAt(percent));
-    percentEl.textContent = Math.floor(percent) + '%';
-
-    let phase, status;
-    if (percent < 25)      { phase = 'MORNING';   status = '☀️ Morning — fresh start'; }
-    else if (percent < 50) { phase = 'MIDDAY';    status = '⚡ Midday — keep moving'; }
-    else if (percent < 75) { phase = 'AFTERNOON'; status = '🔥 Afternoon — push it'; }
-    else if (percent < 90) { phase = 'EVENING';   status = '⏳ Evening — wrap up'; }
-    else                   { phase = 'BEDTIME';   status = '🌙 Bedtime soon'; }
-    phaseEl.textContent  = phase;
-    statusEl.textContent = status;
-
-    const minsLeft = (SLEEP_HOUR - hours) * 60;
-    remainingEl.textContent = formatRemaining(minsLeft) + ' awake time left';
-  }
-
-  // ---------- Row building ----------
-  function makeInlineEdit(textEl, goals, idx, key, reload) {
-    textEl.addEventListener('click', () => {
-      if (textEl.getAttribute('contenteditable') === 'true') return;
-      const original = textEl.textContent;
-      textEl.setAttribute('contenteditable', 'true');
-      textEl.focus();
-      const range = document.createRange();
-      range.selectNodeContents(textEl);
-      range.collapse(false);
-      const sel = window.getSelection();
-      sel.removeAllRanges(); sel.addRange(range);
-
-      function commit() {
-        const next = textEl.textContent.trim();
-        textEl.removeAttribute('contenteditable');
-        if (next && next !== original) {
-          const list = getGoals(key);
-          if (list[idx]) { list[idx].text = next; setGoals(key, list); }
-          reload();
-        } else {
-          textEl.textContent = original;
-        }
-      }
-      function cancel() {
-        textEl.removeAttribute('contenteditable');
-        textEl.textContent = original;
-      }
-      textEl.addEventListener('blur', commit, { once: true });
-      textEl.addEventListener('keydown', function onKey(e) {
-        if (e.key === 'Enter') { e.preventDefault(); textEl.removeEventListener('keydown', onKey); textEl.blur(); }
-        else if (e.key === 'Escape') { e.preventDefault(); textEl.removeEventListener('keydown', onKey); cancel(); }
+    goals.slice(0, 4).forEach((g, i) => {
+      const li = document.createElement('li');
+      li.className = 'goals-mini-row';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.className = 'goals-mini-check'; cb.checked = !!g.done;
+      cb.addEventListener('change', () => {
+        const list = storeGet(k) || [];
+        if (list[i]) { list[i].done = cb.checked; if (cb.checked) list[i].doneAt = Date.now(); else delete list[i].doneAt; }
+        storeSet(k, list); label.classList.toggle('done', cb.checked);
+        readGoalsStat(); loadGoalsMini();
+        window.dispatchEvent(new CustomEvent('goals-changed'));
       });
+      const label = document.createElement('span');
+      label.className = 'goals-mini-label' + (g.done ? ' done' : '');
+      label.textContent = g.text;
+      li.appendChild(cb); li.appendChild(label);
+      listEl.appendChild(li);
     });
+    if (goals.length > 4) {
+      const more = document.createElement('li');
+      more.className = 'goals-mini-row';
+      more.innerHTML = '<span class="empty-state" style="text-align:left">+' + (goals.length-4) + ' more · <a href="goals.html" style="color:var(--accent)">see all →</a></span>';
+      listEl.appendChild(more);
+    }
   }
 
-  function wireDragReorder(row, listEl, key, reload) {
-    row.setAttribute('draggable', 'true');
-    row.addEventListener('dragstart', (e) => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', row.dataset.idx);
-    });
-    row.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      row.classList.add('is-drag-over');
-    });
-    row.addEventListener('dragleave', () => row.classList.remove('is-drag-over'));
-    row.addEventListener('drop', (e) => {
-      e.preventDefault();
-      row.classList.remove('is-drag-over');
-      const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
-      const to   = parseInt(row.dataset.idx, 10);
-      if (isNaN(from) || isNaN(to) || from === to) return;
-      const list = getGoals(key);
-      const [moved] = list.splice(from, 1);
-      list.splice(to, 0, moved);
-      setGoals(key, list);
-      reload();
-    });
-  }
-
-  function buildGoalRow(goal, idx, key, readOnly, reload) {
-    const li = document.createElement('li');
-    li.className = 'gm-row';
-    li.dataset.idx = String(idx);
-    if (goal.done) li.classList.add('gm-row-done');
-    if (goal.queued) li.classList.add('gm-row-queued');
-
-    const handle = document.createElement('span');
-    handle.className = 'gm-handle';
-    handle.textContent = '⋮⋮';
-    li.appendChild(handle);
-
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.className = 'gm-check';
-    cb.checked = !!goal.done;
-    if (readOnly) { cb.disabled = true; cb.title = 'Activates at 6 AM tomorrow'; }
-    cb.addEventListener('change', () => {
-      const list = getGoals(key);
-      if (!list[idx]) return;
-      list[idx].done = cb.checked;
-      if (cb.checked) list[idx].doneAt = Date.now();
-      else delete list[idx].doneAt;
-      setGoals(key, list);
-      reload();
-    });
-    li.appendChild(cb);
-
-    const text = document.createElement('span');
-    text.className = 'gm-text';
-    text.textContent = goal.text;
-    li.appendChild(text);
-    makeInlineEdit(text, null, idx, key, reload);
-
-    const queueBtn = document.createElement('button');
-    queueBtn.type = 'button';
-    queueBtn.className = 'gm-queue-btn' + (goal.queued ? ' gm-queue-active' : '');
-    queueBtn.textContent = '⚡';
-    queueBtn.title = 'Queue for productivity window';
-    if (readOnly) queueBtn.disabled = true;
-    queueBtn.addEventListener('click', () => {
-      const list = getGoals(key);
-      if (!list[idx]) return;
-      list[idx].queued = !list[idx].queued;
-      setGoals(key, list);
-      li.classList.add('is-queue-flashing');
-      setTimeout(reload, 480);
-    });
-    li.appendChild(queueBtn);
-
-    const del = document.createElement('button');
-    del.type = 'button';
-    del.className = 'goal-delete';
-    del.setAttribute('aria-label', 'Delete goal');
-    del.textContent = '×';
-    del.addEventListener('click', () => {
-      const list = getGoals(key);
-      list.splice(idx, 1);
-      setGoals(key, list);
-      reload();
-    });
-    li.appendChild(del);
-
-    wireDragReorder(li, null, key, reload);
-    return li;
-  }
-
-  // ---------- Renderers ----------
-  function renderTodayHeader() {
-    const goals = getGoals(todayKey());
-    const total = goals.length;
-    const done  = goals.filter(g => g.done).length;
-    document.getElementById('gmProgressNum').textContent   = done;
-    document.getElementById('gmProgressTotal').textContent = '/ ' + total;
-    const label = document.getElementById('gmProgressLabel');
-    if (total === 0)        label.textContent = 'no goals yet';
-    else if (done === total) label.textContent = 'all done — solid day';
-    else                     label.textContent = 'complete';
-
-    document.getElementById('todayLabel').textContent =
-      'Today — ' + formatDate(getActiveDateString());
-
-    const bar = document.getElementById('gmBar');
-    bar.innerHTML = '';
-    goals.forEach(g => {
-      const seg = document.createElement('div');
-      seg.className = 'gm-bar-seg' + (g.done ? ' gm-bar-seg-done' : '');
-      bar.appendChild(seg);
-    });
-
-    const card = document.getElementById('gmCardToday');
-    card.classList.toggle('gm-all-done', total > 0 && done === total);
-
-    const pushBtn = document.getElementById('gmPushBtn');
-    pushBtn.style.display = (total > 0 && done < total) ? 'block' : 'none';
-  }
-
-  function renderStreak() {
-    const s = loadStreak();
-    document.getElementById('gmStreakNum').textContent = s.count;
-    document.getElementById('gmStreak').classList.toggle('gm-streak-active', s.count > 0);
-  }
-
-  function renderTomorrowCount() {
-    const list = getGoals(tomorrowKey());
-    document.getElementById('gmTomorrowCount').textContent = list.length + ' planned';
-    document.getElementById('tomorrowLabel').textContent =
-      'Plan tomorrow — ' + formatDate(getTomorrowDateString());
-  }
-
-  function renderListInto(goals, listEl, emptyEl, key, readOnly) {
+  // ---- Upcoming mini ----
+  function loadUpcomingMini() {
+    const events = storeGet('acad:events') || [];
+    const now = new Date(); const in7 = new Date(now.getTime() + 7*24*3600*1000);
+    const due = events
+      .filter(e => { const d = new Date(e.date); return d >= now && d <= in7; })
+      .sort((a,b) => new Date(a.date) - new Date(b.date));
+    document.getElementById('statPending').textContent = due.length > 0 ? due.length : '–';
+    const listEl = document.getElementById('upcomingList');
     listEl.innerHTML = '';
-    emptyEl.style.display = goals.length === 0 ? 'block' : 'none';
-    const reload = () => (key === todayKey() ? loadToday() : loadTomorrow());
-
-    const visible = goals.length > 5 ? goals.slice(0, 5) : goals;
-    visible.forEach((g, i) => listEl.appendChild(buildGoalRow(g, i, key, readOnly, reload)));
-
-    if (goals.length > 5) {
-      let expanded = false;
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'gm-show-toggle';
-      const updateLabel = () => {
-        toggle.textContent = expanded ? 'Show less ▴' : ('Show ' + (goals.length - 5) + ' more ▾');
-      };
-      updateLabel();
-      toggle.addEventListener('click', () => {
-        expanded = !expanded;
-        if (expanded) {
-          goals.slice(5).forEach((g, i) => {
-            const row = buildGoalRow(g, i + 5, key, readOnly, reload);
-            listEl.insertBefore(row, toggle);
-          });
-        } else {
-          Array.from(listEl.querySelectorAll('.gm-row')).slice(5).forEach(r => r.remove());
-        }
-        updateLabel();
-      });
-      listEl.appendChild(toggle);
+    if (due.length === 0) {
+      listEl.innerHTML = '<li class="empty-state">Nothing due in the next 7 days. 🎉</li>';
+      return;
     }
-
-    if (key === todayKey()) renderTodayHeader();
-    else                    renderTomorrowCount();
-  }
-
-  function loadToday() {
-    const goals = getGoals(todayKey());
-    renderListInto(goals, document.getElementById('goalList'), document.getElementById('emptyState'), todayKey(), false);
-  }
-  function loadTomorrow() {
-    const goals = getGoals(tomorrowKey());
-    renderListInto(goals, document.getElementById('tomorrowList'), document.getElementById('tomorrowEmpty'), tomorrowKey(), true);
-  }
-
-  // ---------- Push remaining ----------
-  document.getElementById('gmPushBtn').addEventListener('click', () => {
-    const today    = getGoals(todayKey());
-    const remaining = today.filter(g => !g.done);
-    if (remaining.length === 0) return;
-    if (!confirm('Move ' + remaining.length + ' unchecked goal' + (remaining.length === 1 ? '' : 's') + ' to tomorrow?')) return;
-    const tomorrow = getGoals(tomorrowKey());
-    const seen = new Set(tomorrow.map(g => g.text));
-    remaining.forEach(g => {
-      if (!seen.has(g.text)) { tomorrow.push({ text: g.text, done: false }); seen.add(g.text); }
+    const DN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    due.slice(0,5).forEach(e => {
+      const d = new Date(e.date);
+      const li = document.createElement('li'); li.className = 'upcoming-row';
+      li.innerHTML = '<span class="upcoming-date">' + DN[d.getDay()] + ' ' + String(d.getDate()).padStart(2,'0') + '</span>'
+        + '<span class="upcoming-title">' + esc(e.title) + '</span>'
+        + '<span class="upcoming-tag">' + esc(e.subject || e.type || 'event') + '</span>';
+      listEl.appendChild(li);
     });
-    setGoals(tomorrowKey(), tomorrow);
-    setGoals(todayKey(), today.filter(g => g.done));
-    loadToday(); loadTomorrow();
-  });
-
-  // ---------- Add + Polish handlers ----------
-  function showStatus(el, message, isError) {
-    el.textContent = message;
-    el.classList.toggle('gm-status-error', !!isError);
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.textContent = ''; el.classList.remove('gm-status-error'); }, 3500);
   }
 
-  async function polishOne(text) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content:
-            'Rewrite this single goal so it is concrete, action-oriented, and under 60 characters. ' +
-            'Return ONLY a JSON array with exactly one string, no preamble, no code fences.\n\nGoal: ' + text
-        }]
-      })
-    });
-    const data = await res.json();
-    const content = (data && data.content && data.content[0] && data.content[0].text) || '';
-    const arr = JSON.parse(content);
-    if (!Array.isArray(arr) || arr.length < 1 || typeof arr[0] !== 'string') throw new Error('bad response');
-    return arr[0].trim();
-  }
-
-  function makeAddHandlers(input, addBtn, polishBtn, key, statusEl, reload) {
-    function plainAdd(text) {
-      const list = getGoals(key);
-      list.push({ text, done: false });
-      setGoals(key, list);
-      input.value = '';
-      reload();
+  // ---- Grades mini ----
+  function loadGradesMini() {
+    const subjects = storeGet('acad:grades') || [];
+    const listEl = document.getElementById('gradesList');
+    listEl.innerHTML = '';
+    if (subjects.length === 0) {
+      listEl.innerHTML = '<li class="empty-state">No subjects added yet.</li>';
+      document.getElementById('statGrade').textContent = '–'; return;
     }
-    addBtn.addEventListener('click', () => {
-      const text = input.value.trim();
-      if (!text) return;
-      plainAdd(text);
+    let tSum = 0, tCnt = 0;
+    subjects.forEach(s => {
+      const gs = s.grades || []; if (!gs.length) return;
+      const avg = gs.reduce((a,g) => a + +g.value, 0) / gs.length;
+      tSum += gs.reduce((a,g) => a + +g.value, 0); tCnt += gs.length;
+      const isLow  = avg < 4.0;
+      const isPass = avg >= 4.0;
+      const li = document.createElement('li'); li.className = 'grades-row';
+      li.innerHTML = '<span class="grades-subject">' + esc(s.name) + '</span>'
+        + '<span class="grades-avg' + (isLow ? ' low' : (isPass ? ' pass' : '')) + '">'
+        + avg.toFixed(1) + (isLow ? ' ⚠️' : '') + '</span>';
+      listEl.appendChild(li);
     });
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
-    });
-    polishBtn.addEventListener('click', async () => {
-      const text = input.value.trim();
-      if (!text) return;
-      if (!ANTHROPIC_API_KEY) {
-        plainAdd(text);
-        showStatus(statusEl, 'Polish needs an Anthropic API key — added as-typed.', false);
-        return;
-      }
-      polishBtn.disabled = true;
-      try {
-        const polished = await polishOne(text);
-        plainAdd(polished);
-      } catch (e) {
-        plainAdd(text);
-        showStatus(statusEl, 'Polish failed — added as-typed.', true);
-      } finally {
-        polishBtn.disabled = false;
-      }
-    });
+    if (tCnt) document.getElementById('statGrade').textContent = (tSum/tCnt).toFixed(1);
   }
 
-  makeAddHandlers(
-    document.getElementById('goalInput'),
-    document.getElementById('goalAddBtn'),
-    document.getElementById('goalPolishBtn'),
-    todayKey(),
-    document.getElementById('polishStatus'),
-    loadToday
-  );
-  makeAddHandlers(
-    document.getElementById('tomorrowInput'),
-    document.getElementById('tomorrowAddBtn'),
-    document.getElementById('tomorrowPolishBtn'),
-    tomorrowKey(),
-    document.getElementById('tomorrowStatus'),
-    loadTomorrow
-  );
+  function renderAll() {
+    updateDayRing();
+    loadGoalsMini();
+    loadUpcomingMini();
+    loadGradesMini();
+    readNetWorthStat();
+    readSubsStat();
+  }
 
-  // ---------- Boot ----------
-  rollover();
-  processStreak();
-  loadToday();
-  loadTomorrow();
-  renderStreak();
-  updateDayRing();
-  setInterval(updateDayRing, 60 * 1000);
-  startTicker();
-
-  // Re-render when storage changes from another tab (or our bridged parent).
-  window.addEventListener('storage', () => {
-    loadToday(); loadTomorrow(); renderStreak();
-  });
+  renderAll();
+  setInterval(updateDayRing, 60000);
+  setInterval(renderAll, 30000);
+  window.addEventListener('storage', renderAll);
+  window.addEventListener('goals-changed', renderAll);
+  window.addEventListener('focus', renderAll);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) renderAll(); });
 })();
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
-    appKey: 'goals',
+    appKey: 'main',
     syncedPrefixes: ['goals:'],
+    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs'],
     onApplied: function () {
       window.dispatchEvent(new CustomEvent('goals-changed'));
       window.dispatchEvent(new Event('storage'));
@@ -1325,81 +640,47 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
+<!-- Weather + datetime in topbar -->
 <script>
 (function () {
   var DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var WMO = {
-    0:'☀️', 1:'🌤️', 2:'🌤️', 3:'☁️',
-    45:'🌫️', 48:'🌫️',
-    51:'🌦️', 53:'🌦️', 55:'🌦️', 56:'🌦️', 57:'🌦️',
-    61:'🌧️', 63:'🌧️', 65:'🌧️', 66:'🌧️', 67:'🌧️',
-    71:'❄️',  73:'❄️',  75:'❄️',  77:'❄️',
-    80:'🌧️', 81:'🌧️', 82:'🌧️',
-    85:'🌨️', 86:'🌨️',
-    95:'⛈️', 96:'⛈️', 99:'⛈️'
-  };
+  var WMO = {0:'☀️',1:'🌤️',2:'🌤️',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',
+    61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌧️',81:'🌧️',82:'🌧️',95:'⛈️',96:'⛈️',99:'⛈️'};
   var weatherEl, datetimeEl;
 
-  function pad(n) { return String(n).padStart(2, '0'); }
-
+  function pad(n) { return String(n).padStart(2,'0'); }
   function updateClock() {
     if (!datetimeEl) return;
-    var now = new Date();
-    datetimeEl.textContent =
-      DAYS[now.getDay()] + ', ' + now.getDate() + ' ' + MONTHS[now.getMonth()] +
-      '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+    var d = new Date();
+    datetimeEl.textContent = DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '  ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
   }
-
   function fetchWeather(lat, lon) {
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat +
-          '&longitude=' + lon + '&current=temperature_2m,weather_code&timezone=auto')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        var c = d && d.current;
-        if (!c || !weatherEl) return;
-        weatherEl.textContent = (WMO[c.weather_code] || '') + ' ' + Math.round(c.temperature_2m) + '°C';
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weather_code&timezone=auto')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var c = d && d.current; if (!c || !weatherEl) return;
+        weatherEl.textContent = (WMO[c.weather_code]||'') + ' ' + Math.round(c.temperature_2m) + '°C';
         weatherEl.style.opacity = '1';
-      })
-      .catch(function() {
-        if (weatherEl) weatherEl.style.opacity = '0';
-      });
+      }).catch(function(){if(weatherEl)weatherEl.style.opacity='0.4';});
   }
-
   function getAndFetch() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        function(pos) { fetchWeather(pos.coords.latitude, pos.coords.longitude); },
-        function()    { fetchWeather(47.5596, 7.5886); },
-        { timeout: 8000 }
-      );
-    } else {
-      fetchWeather(47.5596, 7.5886);
-    }
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(
+      function(p){fetchWeather(p.coords.latitude,p.coords.longitude);},
+      function(){fetchWeather(47.5596,7.5886);}, {timeout:8000});
+    else fetchWeather(47.5596,7.5886);
   }
-
-  // topbar.js is defer'd: it runs and injects #topbar before DOMContentLoaded fires,
-  // so this listener is guaranteed to find the element.
   document.addEventListener('DOMContentLoaded', function () {
-    var topbar = document.getElementById('topbar');
-    if (!topbar) return;
-
+    var tb = document.getElementById('topbar'); if (!tb) return;
     var info = document.createElement('div');
-    info.id = 'topbarInfo';
-    info.className = 'topbar-info';
-    info.innerHTML =
-      '<span class="topbar-info-weather" id="infoWeather" style="opacity:0.25">—°C</span>' +
-      '<span class="topbar-info-sep">·</span>' +
-      '<span class="topbar-info-datetime" id="infoDatetime"></span>';
-    topbar.insertBefore(info, topbar.firstChild);
-
-    weatherEl  = document.getElementById('infoWeather');
+    info.id = 'topbarInfo'; info.className = 'topbar-info';
+    info.innerHTML = '<span class="topbar-info-weather" id="infoWeather" style="opacity:0.35">—°C</span><span class="topbar-info-sep">·</span><span class="topbar-info-datetime" id="infoDatetime"></span>';
+    tb.insertBefore(info, tb.firstChild);
+    weatherEl = document.getElementById('infoWeather');
     datetimeEl = document.getElementById('infoDatetime');
-
-    updateClock();
-    setInterval(updateClock, 1000);
-    getAndFetch();
-    setInterval(getAndFetch, 15 * 60 * 1000);
+    updateClock(); setInterval(updateClock, 1000);
+    getAndFetch(); setInterval(getAndFetch, 15*60*1000);
   });
 })();
 </script>

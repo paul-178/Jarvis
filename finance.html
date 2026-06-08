@@ -3,81 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a0b">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#FFD080">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Finances</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg: #0A0A0B;
-  --bg-deep: #050506;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-secondary: rgba(255, 255, 255, 0.035);
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: transparent;
-  --glass-border-strong: transparent;
+  --bg: linear-gradient(155deg, #FFECD2 0%, #FFD080 55%, #F4A040 100%);
+  --bg-deep: #FFF3DC;
+  --bg-card: rgba(255, 250, 228, 0.90);
+  --bg-secondary: rgba(255, 244, 210, 0.80);
+  --glass-bg: rgba(255, 249, 228, 0.88);
+  --glass-border: rgba(210, 148, 42, 0.20);
+  --glass-border-strong: rgba(210, 148, 42, 0.32);
   --glass-shadow:
-    0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
-    0 12px 40px rgba(0, 0, 0, 0.45),
-    0 1px 2px rgba(0, 0, 0, 0.25);
-  --text-primary: #FAFAFA;
-  --text-secondary: #B8B6B0;
-  --text-tertiary: #76746E;
-  --text-quaternary: #4D4B47;
-  --border: transparent;
-  --border-soft: transparent;
-  --accent: #E07658;
-  --success: #6BE3A4;
-  --warning: #F2C063;
-  --danger: #FF6B6B;
+    0 6px 28px rgba(175, 95, 15, 0.11),
+    0 1px 4px rgba(140, 70, 8, 0.07);
+  --text-primary: #1C0A00;
+  --text-secondary: rgba(78, 44, 6, 0.72);
+  --text-tertiary: rgba(115, 72, 10, 0.48);
+  --text-quaternary: rgba(140, 90, 15, 0.35);
+  --border: rgba(210, 148, 42, 0.18);
+  --border-soft: rgba(210, 148, 42, 0.12);
+  --accent: #FF6B2B;
+  --success: #2CA83C;
+  --warning: #F28200;
+  --danger: #D03030;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  background: var(--bg-deep);
+  background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
   min-height: 100%;
-}
-
-/* Backdrop — black with subtle warm + cool washes */
-body::before {
-  content: '';
-  position: fixed;
-  inset: -10%;
-  z-index: -2;
-  background:
-    radial-gradient(60% 45% at 82% 14%, rgba(224, 118, 88, 0.16) 0%, transparent 55%),
-    radial-gradient(55% 45% at 18% 90%, rgba(180, 180, 200, 0.06) 0%, transparent 55%),
-    linear-gradient(180deg, #0A0A0B 0%, #050506 100%);
-  filter: blur(40px) saturate(1.05);
-  pointer-events: none;
-}
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image: radial-gradient(rgba(255,255,255,0.014) 1px, transparent 1px);
-  background-size: 3px 3px;
-  opacity: 0.7;
-  pointer-events: none;
 }
 
 .shell {
   max-width: 880px;
   margin: 0 auto;
-  padding: 24px 16px 100px;   /* extra bottom padding so tab bar doesn't cover content */
+  padding: 16px 16px 32px;
 }
 
 /* ===== Back to dashboard ===== */
@@ -85,10 +61,10 @@ body::after {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px 8px 10px;
-  margin: 0 0 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  padding: 7px 13px 7px 10px;
+  margin: 0 0 12px;
+  background: rgba(255, 244, 210, 0.70);
+  border: 1px solid rgba(210, 148, 42, 0.28);
   border-radius: 999px;
   color: var(--text-secondary);
   font-family: var(--font);
@@ -100,54 +76,49 @@ body::after {
   transition: background 0.15s ease, color 0.15s ease;
 }
 .fin-back-btn:hover, .fin-back-btn:active {
-  background: rgba(255,255,255,0.07);
+  background: rgba(255, 210, 130, 0.40);
   color: var(--text-primary);
 }
 .fin-back-btn svg { display: block; }
 
-/* ===== Bottom tab bar ===== */
+/* ===== Internal section tab bar (sticky top within shell) ===== */
 .bottom-tabs {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 100;
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   justify-content: center;
   gap: 4px;
-  padding: 8px max(12px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right));
-  background: linear-gradient(180deg, transparent, rgba(5,5,6,0.92) 30%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-.bottom-tabs::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 12px; right: 12px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
-  pointer-events: none;
+  padding: 6px;
+  margin: -6px -6px 16px;
+  background: rgba(255, 244, 210, 0.88);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(210, 148, 42, 0.16);
+  border-radius: 0 0 20px 20px;
 }
 .bot-tab {
-  flex: 1; max-width: 140px;
+  flex: 1; max-width: 160px;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-tertiary);
-  padding: 9px 14px 8px;
-  border-radius: 12px;
+  padding: 8px 12px 7px;
+  border-radius: 14px;
   font-family: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.bot-tab:hover { color: var(--text-secondary); background: rgba(255,255,255,0.025); }
+.bot-tab:hover { color: var(--text-secondary); background: rgba(255, 210, 130, 0.28); }
 .bot-tab.active {
-  color: var(--text-primary);
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.10);
+  color: #FF8C1A;
+  background: rgba(255, 140, 26, 0.18);
+  border-color: rgba(255, 140, 26, 0.28);
 }
-.bot-tab-icon { font-size: 18px; line-height: 1; }
+.bot-tab-icon { font-size: 17px; line-height: 1; }
 .bot-tab-label {
-  font-size: 10px; font-weight: 700;
+  font-size: 9.5px; font-weight: 800;
   letter-spacing: 0.10em;
   text-transform: uppercase;
 }
@@ -176,8 +147,8 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   content: '';
   width: 18px;
   height: 1px;
-  background: var(--text-tertiary);
-  opacity: 0.6;
+  background: rgba(180, 120, 30, 0.50);
+  opacity: 1;
 }
 .section-title-text { display: inline-flex; align-items: center; gap: 8px; }
 .section-title-text::before {
@@ -202,7 +173,7 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+  background: linear-gradient(90deg, rgba(210,148,42,0.22), transparent);
 }
 
 /* Card */
@@ -212,19 +183,9 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   margin-bottom: 10px;
-  backdrop-filter: blur(24px) saturate(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(1.2);
   box-shadow: var(--glass-shadow);
   position: relative;
   overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 14px; right: 14px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
-  pointer-events: none;
 }
 .card-grid {
   display: grid;
@@ -243,8 +204,8 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   margin: 2px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  border: none;
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(210, 148, 42, 0.20);
+  background: rgba(255, 220, 130, 0.25);
   color: var(--text-secondary);
   font-family: var(--font-mono);
   text-transform: uppercase;
@@ -254,10 +215,10 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   width: 5px; height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: rgba(255,255,255,0.30);
+  background: rgba(180, 120, 30, 0.40);
 }
-.tag-green::before { background: #6BE3A4; box-shadow: 0 0 6px rgba(107,227,164,0.55); }
-.tag-green { background: rgba(107, 227, 164, 0.10); color: #8EE9B7; }
+.tag-green::before { background: #2CA83C; box-shadow: 0 0 6px rgba(44,168,60,0.40); }
+.tag-green { background: rgba(44, 168, 60, 0.10); color: #2A9838; border-color: rgba(44,168,60,0.25); }
 .pill-group { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
 
 /* Empty state */
@@ -279,7 +240,7 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   content: '';
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: var(--text-quaternary);
+  background: rgba(180, 120, 30, 0.40);
   flex-shrink: 0;
 }
 
@@ -290,9 +251,9 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   align-items: stretch;
   margin-top: 10px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.30);
+  background: rgba(200, 140, 30, 0.10);
   border-radius: 12px;
-  border: none;
+  border: 1px solid rgba(210, 148, 42, 0.18);
 }
 .quick-add input,
 .quick-add input[type="text"],
@@ -312,9 +273,9 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
 .quick-add input::placeholder { color: var(--text-tertiary); }
 .quick-add-btn {
   padding: 0 14px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 140, 26, 0.18);
   border: none;
-  color: var(--text-secondary);
+  color: #FF8C1A;
   border-radius: 9px;
   font-family: inherit;
   font-size: 14px;
@@ -322,7 +283,7 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   cursor: pointer;
   white-space: nowrap;
 }
-.quick-add-btn:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+.quick-add-btn:hover { background: rgba(255, 140, 26, 0.30); color: var(--text-primary); }
 .quick-add-btn:active { transform: scale(0.96); }
 
 /* Custom list rows */
@@ -331,14 +292,14 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  background: rgba(255,255,255,0.025);
-  border: none;
+  background: rgba(255, 243, 210, 0.70);
+  border: 1px solid rgba(210, 148, 42, 0.16);
   border-radius: 10px;
   margin-bottom: 5px;
   font-size: 13px;
   color: var(--text-primary);
 }
-.custom-item:hover { background: rgba(255,255,255,0.05); }
+.custom-item:hover { background: rgba(255, 230, 150, 0.50); }
 .custom-item .item-dot {
   width: 5px; height: 5px;
   border-radius: 50%;
@@ -399,8 +360,8 @@ html, body { scrollbar-width: none; -ms-overflow-style: none; }
 .nw-del:hover { color: var(--danger); }
 
 .nw-subcard {
-  background: rgba(255,255,255,0.025) !important;
-  border: none;
+  background: rgba(255, 244, 210, 0.60) !important;
+  border: 1px solid rgba(210, 148, 42, 0.16) !important;
   margin-bottom: 0;
   min-width: 0;
   display: flex;
@@ -1573,11 +1534,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 <body>
 <div class="shell">
 
-<!-- ===== BACK BUTTON ===== -->
-<a href="index.html" class="fin-back-btn" aria-label="Back to dashboard">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-  <span>Back</span>
-</a>
+<!-- ===== SECTION TAB BAR ===== -->
+<nav class="bottom-tabs" id="bottomTabs" aria-label="Sections">
+  <button class="bot-tab active" data-tab="net">
+    <span class="bot-tab-icon">📊</span>
+    <span class="bot-tab-label">Net Worth</span>
+  </button>
+  <button class="bot-tab" data-tab="subs">
+    <span class="bot-tab-icon">🔁</span>
+    <span class="bot-tab-label">Subs</span>
+  </button>
+  <button class="bot-tab" data-tab="incoming">
+    <span class="bot-tab-icon">📦</span>
+    <span class="bot-tab-label">Orders</span>
+  </button>
+  <button class="bot-tab" data-tab="wish">
+    <span class="bot-tab-icon">🎯</span>
+    <span class="bot-tab-label">Wishlist</span>
+  </button>
+</nav>
 
 <!-- ===== FINANCE TICKER (rotating subscription renewals) ===== -->
 <div class="finance-ticker hidden" id="financeTicker">
@@ -1866,25 +1841,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 </div>
 
-<!-- ===== BOTTOM TAB BAR ===== -->
-<nav class="bottom-tabs" id="bottomTabs" aria-label="Sections">
-  <button class="bot-tab active" data-tab="net">
-    <span class="bot-tab-icon">📊</span>
-    <span class="bot-tab-label">Net Worth</span>
-  </button>
-  <button class="bot-tab" data-tab="subs">
-    <span class="bot-tab-icon">🔁</span>
-    <span class="bot-tab-label">Subs</span>
-  </button>
-  <button class="bot-tab" data-tab="incoming">
-    <span class="bot-tab-icon">📦</span>
-    <span class="bot-tab-label">Orders</span>
-  </button>
-  <button class="bot-tab" data-tab="wish">
-    <span class="bot-tab-icon">🎯</span>
-    <span class="bot-tab-label">Wishlist</span>
-  </button>
-</nav>
 
 <script>
 (function() {
