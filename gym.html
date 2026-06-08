@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a0b">
+<meta name="theme-color" content="#000000">
 <title>Progressive Overload Coach</title>
 <script src="topbar.js" defer></script>
 
@@ -93,25 +93,25 @@ const CONFIG = {
 
 <style>
 :root {
-  --bg: #0a0a0b;
-  --bg-card: #111113;
-  --text-1: #ffffff;
-  --text-2: rgba(255,255,255,0.6);
-  --text-3: rgba(255,255,255,0.4);
-  --text-4: rgba(255,255,255,0.25);
-  --border: rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.14);
-  --accent: #ffffff;
-  --good: #6ee7b7;
-  --warn: #fbbf24;
-  --bad: #ff8a8a;
-  --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --bg: #000000;
+  --bg-card: #1C1C1E;
+  --text-1: #FFFFFF;
+  --text-2: rgba(235,235,245,0.6);
+  --text-3: rgba(235,235,245,0.3);
+  --text-4: rgba(235,235,245,0.18);
+  --border: rgba(84,84,88,0.45);
+  --border-strong: rgba(84,84,88,0.65);
+  --accent: #FFFFFF;
+  --good: #30D158;
+  --warn: #FF9F0A;
+  --bad: #FF453A;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, SF Mono, Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, #14141a 0%, #0a0a0b 60%);
+  background: #000000;
   color: var(--text-1);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -144,9 +144,10 @@ img, video, canvas, svg { max-width: 100%; }
   display: flex;
   justify-content: center;
   padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-  background: linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.78) 38%, rgba(10,10,11,0.94) 100%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(18,18,20,0.80);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 0.5px solid rgba(84,84,88,0.55);
   pointer-events: none;
 }
 .tabbar-inner {
@@ -156,8 +157,8 @@ img, video, canvas, svg { max-width: 100%; }
   max-width: 460px;
   gap: 6px;
   padding: 6px;
-  background: rgba(20, 20, 22, 0.72);
-  border: 1px solid var(--border);
+  background: rgba(28,28,30,0.72);
+  border: 0.5px solid rgba(84,84,88,0.55);
   border-radius: 18px;
   box-shadow: 0 12px 36px rgba(0,0,0,0.55);
 }
@@ -181,9 +182,9 @@ img, video, canvas, svg { max-width: 100%; }
 }
 .tab:hover { color: var(--text-1); }
 .tab[aria-current="page"] {
-  color: var(--text-1);
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.10);
+  color: #FF9F0A;
+  background: rgba(255,159,10,0.12);
+  border-color: rgba(255,159,10,0.25);
 }
 .tab-icon {
   width: 18px;
@@ -240,8 +241,8 @@ img, video, canvas, svg { max-width: 100%; }
 
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: 0.5px solid rgba(84,84,88,0.45);
+  border-radius: 18px;
   padding: 20px;
   margin-bottom: 14px;
 }
@@ -258,8 +259,8 @@ img, video, canvas, svg { max-width: 100%; }
 }
 .po-seg-control {
   display: flex; flex: 1;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  background: rgba(44,44,46,0.72);
+  border: 0.5px solid rgba(84,84,88,0.45);
   border-radius: 12px; padding: 4px; gap: 3px;
 }
 .po-seg-btn {
@@ -294,8 +295,8 @@ img, video, canvas, svg { max-width: 100%; }
 .po-ex-select {
   flex: 1 1 0; min-width: 0;
   padding: 12px 14px;
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,0.28);
+  border: 0.5px solid rgba(84,84,88,0.45);
+  background: rgba(118,118,128,0.12);
   color: var(--text-1); border-radius: 12px;
   font-family: inherit; font-size: 14px; font-weight: 500;
   appearance: none; -webkit-appearance: none;
@@ -304,8 +305,8 @@ img, video, canvas, svg { max-width: 100%; }
   text-overflow: ellipsis; overflow: hidden;
 }
 .po-ex-select:focus {
-  outline: none; border-color: rgba(255,255,255,0.40);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  outline: none; border-color: rgba(84,84,88,0.8);
+  box-shadow: 0 0 0 3px rgba(84,84,88,0.12);
 }
 .po-ex-select:disabled { opacity: 0.5; }
 .po-btn-icon {
@@ -343,8 +344,8 @@ img, video, canvas, svg { max-width: 100%; }
 .po-last-set {
   display: none; align-items: center; gap: 12px;
   padding: 11px 14px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid var(--border);
+  background: rgba(44,44,46,0.55);
+  border: 0.5px solid rgba(84,84,88,0.45);
   border-radius: 10px;
   margin-bottom: 12px; font-size: 12px;
 }
@@ -374,8 +375,8 @@ img, video, canvas, svg { max-width: 100%; }
 }
 .po-field input[type="number"], .po-field input[type="text"] {
   padding: 14px 12px;
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,0.28);
+  border: 0.5px solid rgba(84,84,88,0.45);
+  background: rgba(118,118,128,0.12);
   color: var(--text-1);
   border-radius: 12px; font-family: inherit;
   font-size: 22px; font-weight: 700; text-align: center;
@@ -387,16 +388,16 @@ img, video, canvas, svg { max-width: 100%; }
   -webkit-appearance: none; margin: 0;
 }
 .po-field input:focus {
-  outline: none; border-color: rgba(255,255,255,0.40);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  outline: none; border-color: rgba(84,84,88,0.8);
+  box-shadow: 0 0 0 3px rgba(84,84,88,0.12);
 }
 .po-weight-row {
   display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: stretch;
 }
 .po-w-btn {
   padding: 0 16px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(84,84,88,0.45);
+  background: rgba(44,44,46,0.72);
   color: var(--text-1);
   border-radius: 12px; font-family: inherit;
   font-size: 20px; font-weight: 700; cursor: pointer;
@@ -412,8 +413,8 @@ img, video, canvas, svg { max-width: 100%; }
   width: 100%;
 }
 .po-reps-pill {
-  padding: 12px 0; border: 1px solid var(--border);
-  background: rgba(0,0,0,0.28); color: var(--text-2);
+  padding: 12px 0; border: 0.5px solid rgba(84,84,88,0.45);
+  background: rgba(44,44,46,0.72); color: var(--text-2);
   border-radius: 8px; cursor: pointer;
   font-family: inherit; font-size: 13px; font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -456,8 +457,8 @@ img, video, canvas, svg { max-width: 100%; }
 /* ----- Prescription card ----- */
 .po-rx-card {
   padding: 18px 20px; border-radius: 14px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid var(--border);
+  background: rgba(44,44,46,0.55);
+  border: 0.5px solid rgba(84,84,88,0.45);
   position: relative;
 }
 .po-rx-card.po-rx-up   { background: linear-gradient(180deg, rgba(110,231,183,0.08), rgba(255,255,255,0.025)); border-color: rgba(110,231,183,0.18); }
@@ -494,8 +495,8 @@ img, video, canvas, svg { max-width: 100%; }
 }
 .po-stat-box {
   padding: 14px 12px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid var(--border);
+  background: rgba(44,44,46,0.55);
+  border: 0.5px solid rgba(84,84,88,0.45);
   border-radius: 12px; text-align: center;
 }
 .po-stat-label {
@@ -526,7 +527,7 @@ img, video, canvas, svg { max-width: 100%; }
 .po-hist-row {
   display: grid; grid-template-columns: 60px 1fr auto; gap: 12px;
   padding: 10px 4px; align-items: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0.5px solid rgba(84,84,88,0.45);
 }
 .po-hist-row:last-child { border-bottom: none; }
 .po-hist-date { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
@@ -548,9 +549,9 @@ img, video, canvas, svg { max-width: 100%; }
 .po-modal-bg.show { display: flex; }
 .po-modal {
   width: 100%; max-width: 420px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  border-radius: 16px;
+  background: #1C1C1E;
+  border: 0.5px solid rgba(84,84,88,0.65);
+  border-radius: 18px;
   padding: 22px; max-height: 88vh; overflow-y: auto;
 }
 .po-modal h3 {
@@ -559,8 +560,8 @@ img, video, canvas, svg { max-width: 100%; }
 .po-modal .po-field { margin-bottom: 12px; }
 .po-modal-seg {
   display: flex; gap: 4px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  background: rgba(44,44,46,0.72);
+  border: 0.5px solid rgba(84,84,88,0.45);
   border-radius: 10px; padding: 3px;
 }
 .po-modal-seg button {
