@@ -17,10 +17,10 @@
   display: flex; justify-content: flex-end; align-items: center;
   gap: 8px;
   padding: max(10px, env(safe-area-inset-top)) 14px 8px;
-  background: rgba(22, 14, 3, 0.93);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.28), inset 0 -1px 0 rgba(255, 220, 140, 0.07);
+  background: rgba(22, 10, 0, 0.52);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: 0 1px 0 rgba(255, 200, 100, 0.08);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
 }
 
@@ -84,12 +84,14 @@
   pointer-events: auto;
   display: flex; align-items: center;
   gap: 2px; padding: 5px;
-  background: rgba(22, 14, 3, 0.93);
+  background: rgba(22, 10, 0, 0.58);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
   border-radius: 28px;
   box-shadow:
-    0 8px 32px rgba(0,0,0,0.32),
-    0 2px 8px rgba(0,0,0,0.20),
-    inset 0 1px 0 rgba(255, 220, 140, 0.07);
+    0 8px 32px rgba(0,0,0,0.24),
+    0 2px 8px rgba(0,0,0,0.14),
+    inset 0 1px 0 rgba(255, 200, 100, 0.10);
 }
 .bottombar-tab {
   display: flex; flex-direction: column; align-items: center; justify-content: center;

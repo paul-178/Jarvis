@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFD080">
+<meta name="theme-color" content="#C8682A">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Paul's Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,10 +11,10 @@
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg-page: linear-gradient(155deg, #FFECD2 0%, #FFD080 55%, #F4A040 100%);
-  --bg-card: rgba(255, 250, 228, 0.90);
-  --bg-card-hero: linear-gradient(155deg, #C0EFA0 0%, #D8F0C0 28%, #FFF8DE 65%, #FFF0C8 100%);
-  --bg-tile: rgba(255, 244, 212, 0.88);
+  --bg-page: linear-gradient(to bottom, #C8682A 0%, #E08830 18%, #F5AD50 46%, #FBCF80 72%, #FDE8B5 100%);
+  --bg-card: rgba(255, 248, 235, 0.65);
+  --bg-card-hero: radial-gradient(ellipse 110% 90% at 50% -5%, #A8E040 0%, #BCEA5A 14%, #D4F090 34%, #EEF8C0 58%, #FFF8E0 78%, #FFF3D2 100%);
+  --bg-tile: rgba(255, 248, 235, 0.55);
   --border-card: rgba(210, 148, 42, 0.20);
   --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
   --text-primary: #1C0A00;
@@ -41,22 +41,22 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   font-family: var(--font-mono);
   font-size: 11.5px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  white-space: nowrap; color: rgba(80, 48, 8, 0.72);
+  white-space: nowrap; color: rgba(255, 220, 150, 0.82);
 }
 .topbar-info-weather { transition: opacity 0.4s; }
-.topbar-info-sep { color: rgba(160, 100, 20, 0.40); margin: 0 1px; }
-.topbar-info-datetime { color: rgba(100, 64, 10, 0.55); font-variant-numeric: tabular-nums; }
+.topbar-info-sep { color: rgba(255, 200, 100, 0.32); margin: 0 1px; }
+.topbar-info-datetime { color: rgba(255, 215, 140, 0.66); font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
 /* === page layout === */
-.home-page { max-width: 920px; margin: 0 auto; padding: 12px 14px 32px; }
+.home-page { max-width: 600px; margin: 0 auto; padding: 12px 20px 32px; }
 
 /* === HERO CARD === */
 .hero-card {
   background: var(--bg-card-hero);
   border-radius: var(--radius-card);
-  border: 1px solid rgba(180, 230, 140, 0.55);
-  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(155, 220, 60, 0.50);
+  box-shadow: var(--shadow-card), 0 0 48px rgba(140, 210, 40, 0.18);
   padding: 26px 22px 20px;
   margin-bottom: 12px;
   display: flex; flex-direction: column; align-items: center;
@@ -105,6 +105,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 }
 .stat-tile {
   background: var(--bg-tile);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-tile);
   padding: 12px 8px 10px; text-align: center;
@@ -136,6 +138,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* === SECTION CARD === */
 .section-card {
   background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-card);
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-card);
@@ -234,7 +238,10 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* === MONEY CARD === */
 .money-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
 .money-tile {
-  background: var(--bg-tile); border: 1px solid var(--border-card);
+  background: var(--bg-tile);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-card);
   border-radius: 16px; padding: 12px 12px 10px;
 }
 .money-tile-label {
@@ -250,14 +257,17 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .money-tile-value.orange { color: var(--accent-orange); }
 .money-subs-row {
   display: flex; align-items: center; gap: 8px;
-  background: var(--bg-tile); border: 1px solid var(--border-card);
+  background: var(--bg-tile);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-card);
   border-radius: 14px; padding: 10px 14px;
 }
 .money-subs-label { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; color: var(--text-label); letter-spacing: 0.12em; text-transform: uppercase; flex: 1; }
 .money-subs-value { font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: var(--text-secondary); }
 
 @media (max-width: 480px) {
-  .home-page { padding: 8px 10px 28px; }
+  .home-page { padding: 8px 16px 28px; }
   .section-card { padding: 14px; }
 }
 </style>
