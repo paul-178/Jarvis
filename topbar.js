@@ -20,7 +20,8 @@
   background: rgba(22, 10, 0, 0.72);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
-  box-shadow: 0 1px 0 rgba(255, 200, 100, 0.08);
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 0 rgba(255, 200, 100, 0.08);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
 }
 
