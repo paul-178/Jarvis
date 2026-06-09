@@ -56,7 +56,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   background: var(--bg-card-hero);
   border-radius: var(--radius-card);
   border: 1px solid rgba(155, 220, 60, 0.50);
-  box-shadow: var(--shadow-card), 0 0 48px rgba(140, 210, 40, 0.18);
+  box-shadow: var(--shadow-card);
   padding: 38px 28px 30px;
   margin-bottom: 14px;
   display: flex; flex-direction: column; align-items: center;
@@ -65,6 +65,15 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* day ring */
 .day-ring {
   position: relative; width: 168px; height: 168px; flex-shrink: 0; margin-bottom: 14px;
+}
+.day-ring::before {
+  content: '';
+  position: absolute;
+  inset: -32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140, 210, 40, 0.38) 0%, rgba(140, 210, 40, 0.10) 55%, transparent 75%);
+  z-index: 0;
+  pointer-events: none;
 }
 .day-ring svg { width: 100%; height: 100%; display: block; }
 .day-ring-track { fill: none; stroke: rgba(200, 165, 110, 0.22); stroke-width: 11; }
