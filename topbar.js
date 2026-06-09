@@ -17,7 +17,7 @@
   display: flex; justify-content: flex-end; align-items: center;
   gap: 8px;
   padding: max(10px, env(safe-area-inset-top)) 14px 8px;
-  background: rgba(22, 10, 0, 0.52);
+  background: rgba(22, 10, 0, 0.72);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   box-shadow: 0 1px 0 rgba(255, 200, 100, 0.08);
