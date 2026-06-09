@@ -17,10 +17,10 @@
   display: flex; justify-content: flex-end; align-items: center;
   gap: 8px;
   padding: max(10px, env(safe-area-inset-top)) 14px 8px;
-  background: rgba(255, 238, 190, 0.50);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border-bottom: 1px solid rgba(210, 148, 40, 0.14);
+  background: rgba(22, 14, 3, 0.93);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.28), inset 0 -1px 0 rgba(255, 220, 140, 0.07);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
 }
 
@@ -31,11 +31,11 @@
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11.5px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  white-space: nowrap; color: rgba(80, 48, 8, 0.72);
+  white-space: nowrap; color: rgba(255, 220, 150, 0.80);
 }
-.topbar-info-weather { opacity: 0.4; transition: opacity 0.4s; }
-.topbar-info-sep { color: rgba(160, 100, 20, 0.40); margin: 0 1px; }
-.topbar-info-datetime { color: rgba(100, 64, 10, 0.55); font-variant-numeric: tabular-nums; }
+.topbar-info-weather { opacity: 0.55; transition: opacity 0.4s; }
+.topbar-info-sep { color: rgba(255, 200, 100, 0.30); margin: 0 1px; }
+.topbar-info-datetime { color: rgba(255, 215, 140, 0.65); font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
 /* water pill */
@@ -43,33 +43,33 @@
 .topbar-water-pill {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 12px;
-  background: rgba(140, 210, 255, 0.26);
-  border: 1.5px solid rgba(100, 175, 230, 0.35);
+  background: rgba(30, 110, 200, 0.30);
+  border: 1.5px solid rgba(130, 200, 255, 0.28);
   border-right: none;
   border-radius: 12px 0 0 12px;
-  text-decoration: none; color: #1A4F7A;
+  text-decoration: none; color: #8CD4FF;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.2s;
 }
-.topbar-water-pill:active { background: rgba(120, 195, 250, 0.40); }
+.topbar-water-pill:active { background: rgba(50, 140, 230, 0.42); }
 .topbar-water-emoji { font-size: 14px; line-height: 1; flex-shrink: 0; }
 .topbar-pill-count {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 13px; font-weight: 800; color: #1A4F7A;
+  font-size: 13px; font-weight: 800; color: #8CD4FF;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .topbar-water-add {
   width: 38px;
-  border: 1.5px solid rgba(100, 175, 230, 0.35);
-  background: rgba(110, 190, 250, 0.30);
-  color: #1A4F7A; font-family: inherit;
+  border: 1.5px solid rgba(130, 200, 255, 0.28);
+  background: rgba(30, 110, 200, 0.34);
+  color: #8CD4FF; font-family: inherit;
   font-size: 19px; font-weight: 700; line-height: 1;
   cursor: pointer; border-radius: 0 12px 12px 0;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.2s, transform 0.10s;
 }
 .topbar-water-add:active { transform: scale(0.97); }
-.topbar-water-add.flash { background: rgba(80, 170, 240, 0.55); }
+.topbar-water-add.flash { background: rgba(60, 160, 255, 0.55); }
 
 /* bottom bar — transparent container, floating pill inside */
 .bottombar {

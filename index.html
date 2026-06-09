@@ -632,7 +632,9 @@ document.addEventListener('DOMContentLoaded', function () {
   initCloudSync({
     appKey: 'main',
     syncedPrefixes: ['goals:'],
-    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs'],
+    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
+                 'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
+                 'po_water_v1', 'goal_streak_v1', 'nw_currency'],
     onApplied: function () {
       window.dispatchEvent(new CustomEvent('goals-changed'));
       window.dispatchEvent(new Event('storage'));

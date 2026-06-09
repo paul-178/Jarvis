@@ -619,8 +619,11 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
-    appKey: 'acad',
-    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'acad:planner'],
+    appKey: 'main',
+    syncedPrefixes: ['goals:'],
+    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
+                 'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
+                 'po_water_v1', 'goal_streak_v1', 'nw_currency'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });
 });
