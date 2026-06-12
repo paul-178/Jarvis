@@ -96,7 +96,7 @@
 }
 .bottombar-tab {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; padding: 7px 12px 6px;
+  gap: 2px; padding: 7px 9px 6px;
   text-decoration: none;
   color: rgba(255, 215, 140, 0.38);
   font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
@@ -128,7 +128,7 @@ body.has-bottombar { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !i
   .topbar-water-pill { padding: 6px 10px; gap: 5px; }
   .topbar-pill-count { font-size: 12px; }
   .topbar-water-add { width: 34px; font-size: 17px; }
-  .bottombar-tab { padding: 6px 9px 5px; font-size: 8px; }
+  .bottombar-tab { padding: 6px 7px 5px; font-size: 8px; }
   .bottombar-tab-icon { font-size: 18px; }
   .bottombar { padding-left: 12px; padding-right: 12px; }
 }
@@ -185,6 +185,9 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
     <a href="finance.html" class="bottombar-tab" data-page="money">
       <span class="bottombar-tab-icon">💰</span><span>MONEY</span>
     </a>
+    <a href="protocol.html" class="bottombar-tab" data-page="protocol">
+      <span class="bottombar-tab-icon">🛡️</span><span>PROTO</span>
+    </a>
   </div>
 </nav>`;
 
@@ -193,10 +196,11 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
   function shouldShowChrome() { return !isEmbedded(); }
   function currentPageKey() {
     const p = (window.location.pathname || '').toLowerCase();
-    if (p.endsWith('goals.html'))   return 'goals';
+    if (p.endsWith('goals.html'))    return 'goals';
     if (p.endsWith('health.html') || p.endsWith('gym.html')) return 'health';
-    if (p.endsWith('acad.html'))    return 'acad';
-    if (p.endsWith('finance.html')) return 'money';
+    if (p.endsWith('acad.html'))     return 'acad';
+    if (p.endsWith('finance.html'))  return 'money';
+    if (p.endsWith('protocol.html')) return 'protocol';
     return 'main';
   }
 
