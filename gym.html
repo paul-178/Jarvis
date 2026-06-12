@@ -94,11 +94,11 @@ const CONFIG = {
 <style>
 :root {
   --bg: #000000;
-  --bg-card: rgba(255, 250, 228, 0.92);
-  --text-1: #1C0A00;
-  --text-2: rgba(78, 44, 6, 0.72);
-  --text-3: rgba(78, 44, 6, 0.45);
-  --text-4: rgba(78, 44, 6, 0.25);
+  --bg-card: #e8e8e8;
+  --text-1: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.70);
+  --text-3: rgba(255, 255, 255, 0.45);
+  --text-4: rgba(255, 255, 255, 0.28);
   --border: rgba(210, 148, 42, 0.22);
   --border-strong: rgba(210, 148, 42, 0.38);
   --accent: #FF6B2B;
@@ -111,7 +111,7 @@ const CONFIG = {
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
-  background: linear-gradient(155deg, #FFECD2 0%, #FFD080 55%, #F4A040 100%);
+  background: #000000;
   background-attachment: fixed;
   color-scheme: light;
   color: var(--text-1);
@@ -1263,6 +1263,13 @@ img, video, canvas, svg { max-width: 100%; }
 }
 
 .hidden { display: none !important; }
+.card, .wt-card, .po-rx-card, .po-stat-box {
+  color: #111111;
+  --text-1: #111111;
+  --text-2: rgba(0, 0, 0, 0.65);
+  --text-3: rgba(0, 0, 0, 0.42);
+  --text-4: rgba(0, 0, 0, 0.25);
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>

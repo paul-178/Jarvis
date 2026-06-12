@@ -11,15 +11,15 @@
 <style>
 :root {
   --bg-page: #000000;
-  --bg-card: rgba(255, 250, 228, 0.92);
-  --bg-row:  rgba(255, 243, 210, 0.80);
-  --bg-input: rgba(255, 244, 210, 0.70);
-  --border-card: rgba(210, 148, 42, 0.22);
+  --bg-card: #e8e8e8;
+  --bg-row: #d8d8d8;
+  --bg-input: rgba(255, 255, 255, 0.50);
+  --border-card: rgba(210, 148, 42, 0.20);
   --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
-  --text-primary: #1C0A00;
-  --text-secondary: rgba(78, 44, 6, 0.72);
-  --text-tertiary: rgba(115, 72, 10, 0.48);
-  --text-label: rgba(118, 76, 10, 0.52);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.70);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-label: rgba(255, 255, 255, 0.48);
   --success: #2CA83C;
   --warning: #F28200;
   --danger: #D03030;
@@ -204,6 +204,13 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 }
 @media (max-width: 400px) {
   .planner-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.card, .subject-block {
+  color: #111111;
+  --text-primary: #111111;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-tertiary: rgba(0, 0, 0, 0.42);
+  --text-label: rgba(0, 0, 0, 0.44);
 }
 </style>
 </head>

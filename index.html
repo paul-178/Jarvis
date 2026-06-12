@@ -12,15 +12,15 @@
 <style>
 :root {
   --bg-page: #000000;
-  --bg-card: rgba(255, 248, 235, 0.65);
+  --bg-card: #e8e8e8;
   --bg-card-hero: radial-gradient(ellipse 110% 90% at 50% -5%, #A8E040 0%, #BCEA5A 14%, #D4F090 34%, #EEF8C0 58%, #FFF8E0 78%, #FFF3D2 100%);
-  --bg-tile: rgba(255, 248, 235, 0.55);
+  --bg-tile: #d8d8d8;
   --border-card: rgba(210, 148, 42, 0.20);
   --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
-  --text-primary: #1C0A00;
-  --text-secondary: rgba(78, 44, 6, 0.72);
-  --text-tertiary: rgba(115, 72, 10, 0.48);
-  --text-label: rgba(118, 76, 10, 0.52);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.70);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-label: rgba(255, 255, 255, 0.48);
   --accent: #FF6B2B;
   --accent-orange: #FF8C1A;
   --accent-green: #2CA83C;
@@ -275,6 +275,13 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 @media (max-width: 480px) {
   .home-page { padding: 8px 16px 28px; }
   .section-card { padding: 14px; }
+}
+.hero-card, .section-card, .stat-tile, .money-tile {
+  color: #111111;
+  --text-primary: #111111;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-tertiary: rgba(0, 0, 0, 0.42);
+  --text-label: rgba(0, 0, 0, 0.44);
 }
 </style>
 </head>
