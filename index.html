@@ -875,10 +875,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function dashboardData() {
+    const KEYS = [
+      'acad:years', 'acad:activeYear',
+      'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs', 'nw_currency',
+      'po_water_v1', 'goal_streak_v1',
+    ];
+    const PREFIXES = ['goals:'];
     const out = {};
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k === KEY_LS) continue;
+      if (KEYS.indexOf(k) === -1 && !PREFIXES.some(p => k.indexOf(p) === 0)) continue;
       try { out[k] = JSON.parse(localStorage.getItem(k)); } catch(e) { out[k] = localStorage.getItem(k); }
     }
     return out;
