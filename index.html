@@ -406,16 +406,22 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   }
   function storeGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
   function getActiveYearSubjects() {
-    const years = storeGet('acad:years') || [];
-    const id = storeGet('acad:activeYear');
-    const year = years.find(y => y.id === id) || years[0];
-    return year ? (year.subjects || []) : [];
+    const years = storeGet('acad:years');
+    if (years && years.length) {
+      const id = storeGet('acad:activeYear');
+      const year = years.find(y => y.id === id) || years[0];
+      return year ? (year.subjects || []) : [];
+    }
+    return storeGet('acad:grades') || [];
   }
   function getActiveYearEvents() {
-    const years = storeGet('acad:years') || [];
-    const id = storeGet('acad:activeYear');
-    const year = years.find(y => y.id === id) || years[0];
-    return year ? (year.events || []) : [];
+    const years = storeGet('acad:years');
+    if (years && years.length) {
+      const id = storeGet('acad:activeYear');
+      const year = years.find(y => y.id === id) || years[0];
+      return year ? (year.events || []) : [];
+    }
+    return storeGet('acad:events') || [];
   }
   function storeSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   function esc(s) { return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -661,6 +667,7 @@ document.addEventListener('DOMContentLoaded', function () {
     appKey: 'main',
     syncedPrefixes: ['goals:'],
     syncedKeys: ['acad:years', 'acad:activeYear',
+                 'acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
                  'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
                  'goal_streak_v1', 'nw_currency'],
     onApplied: function () {
