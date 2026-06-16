@@ -743,7 +743,9 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   // ================================================================
   // BOOT
   // ================================================================
-  migrateIfNeeded();
+  // Migration ONLY runs in onApplied (after sync fetches remote data).
+  // Running it here caused a race: acad:grades not yet in localStorage,
+  // empty year created, pushed to Supabase before real data arrived.
   renderYearSelect();
   renderGrades();
   renderEvents();
