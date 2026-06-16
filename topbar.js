@@ -132,6 +132,11 @@ body.has-bottombar { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !i
   .bottombar-tab-icon { font-size: 18px; }
   .bottombar { padding-left: 12px; padding-right: 12px; }
 }
+@media (max-width: 400px) {
+  .bottombar-tab { padding: 6px 5px 5px; font-size: 7.5px; }
+  .bottombar-tab-icon { font-size: 16px; }
+  .bottombar { padding-left: 8px; padding-right: 8px; }
+}
 html, body { -webkit-text-size-adjust: 100%; }
 @media (max-width: 768px) {
   html { touch-action: pan-y; }
@@ -179,6 +184,9 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
     <a href="health.html" class="bottombar-tab" data-page="health">
       <span class="bottombar-tab-icon">💚</span><span>HEALTH</span>
     </a>
+    <a href="gym.html" class="bottombar-tab" data-page="gym">
+      <span class="bottombar-tab-icon">🏋️</span><span>GYM</span>
+    </a>
     <a href="acad.html" class="bottombar-tab" data-page="acad">
       <span class="bottombar-tab-icon">📚</span><span>ACAD</span>
     </a>
@@ -197,7 +205,8 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
   function currentPageKey() {
     const p = (window.location.pathname || '').toLowerCase();
     if (p.endsWith('goals.html'))    return 'goals';
-    if (p.endsWith('health.html') || p.endsWith('gym.html')) return 'health';
+    if (p.endsWith('health.html'))   return 'health';
+    if (p.endsWith('gym.html'))      return 'gym';
     if (p.endsWith('acad.html'))     return 'acad';
     if (p.endsWith('finance.html'))  return 'money';
     if (p.endsWith('protocol.html')) return 'protocol';
