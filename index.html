@@ -405,6 +405,18 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
     return n;
   }
   function storeGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+  function getActiveYearSubjects() {
+    const years = storeGet('acad:years') || [];
+    const id = storeGet('acad:activeYear');
+    const year = years.find(y => y.id === id) || years[0];
+    return year ? (year.subjects || []) : [];
+  }
+  function getActiveYearEvents() {
+    const years = storeGet('acad:years') || [];
+    const id = storeGet('acad:activeYear');
+    const year = years.find(y => y.id === id) || years[0];
+    return year ? (year.events || []) : [];
+  }
   function storeSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   function esc(s) { return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -476,7 +488,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 
   // ---- Stat: Pending ----
   function readPendingStat() {
-    const events = storeGet('acad:events') || [];
+    const events = getActiveYearEvents();
     const now = Date.now(); const in7 = now + 7*24*3600*1000;
     const n = events.filter(e => { const d = new Date(e.date).getTime(); return d >= now && d <= in7; }).length;
     document.getElementById('statPending').textContent = n > 0 ? n : '–';
@@ -485,7 +497,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 
   // ---- Stat: Grade ----
   function readGradeStat() {
-    const subjects = storeGet('acad:grades') || [];
+    const subjects = getActiveYearSubjects();
     let sum = 0, cnt = 0;
     subjects.forEach(s => (s.grades || []).forEach(g => { sum += +g.value; cnt++; }));
     document.getElementById('statGrade').textContent = cnt ? (sum/cnt).toFixed(1) : '–';
@@ -575,7 +587,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 
   // ---- Upcoming mini ----
   function loadUpcomingMini() {
-    const events = storeGet('acad:events') || [];
+    const events = getActiveYearEvents();
     const now = new Date(); const in7 = new Date(now.getTime() + 7*24*3600*1000);
     const due = events
       .filter(e => { const d = new Date(e.date); return d >= now && d <= in7; })
@@ -600,7 +612,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 
   // ---- Grades mini ----
   function loadGradesMini() {
-    const subjects = storeGet('acad:grades') || [];
+    const subjects = getActiveYearSubjects();
     const listEl = document.getElementById('gradesList');
     listEl.innerHTML = '';
     if (subjects.length === 0) {
@@ -648,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initCloudSync({
     appKey: 'main',
     syncedPrefixes: ['goals:'],
-    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
+    syncedKeys: ['acad:years', 'acad:activeYear',
                  'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
                  'goal_streak_v1', 'nw_currency'],
     onApplied: function () {

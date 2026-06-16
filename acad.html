@@ -131,6 +131,28 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .overall-label { font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: var(--text-label); letter-spacing: 0.14em; text-transform: uppercase; }
 .scale-note { font-size: 11px; color: var(--text-tertiary); margin-left: auto; text-align: right; }
 
+/* ============ YEAR SWITCHER ============ */
+.year-bar {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.year-select {
+  flex: 1; appearance: none; -webkit-appearance: none;
+  padding: 9px 13px;
+  background: var(--bg-input); border: 1.5px solid rgba(0,132,255,0.28);
+  border-radius: 12px; font-family: var(--font); font-size: 13px; font-weight: 700;
+  color: var(--text-primary); cursor: pointer; outline: none;
+  transition: border-color 0.2s;
+}
+.year-select:focus { border-color: rgba(0,229,255,0.60); }
+.year-select option { background: #04044A; color: #fff; }
+.btn-new-year {
+  background: rgba(0,132,255,0.20); color: var(--accent-orange);
+  border: none; border-radius: 12px; padding: 9px 14px;
+  font-family: var(--font); font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.btn-new-year:hover { background: rgba(0,132,255,0.32); }
+
 /* ============ CALENDAR ============ */
 .event-list { list-style: none; margin: 0; padding: 0; }
 .event-row {
@@ -211,6 +233,12 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 <div class="page">
 
   <h1 class="page-title">📚 Academics</h1>
+
+  <!-- Year Switcher -->
+  <div class="year-bar">
+    <select class="year-select" id="yearSelect"></select>
+    <button class="btn-new-year" id="newYearBtn">+ New Year</button>
+  </div>
 
   <div class="acad-tabs">
     <button class="acad-tab active" data-tab="grades">📊 GRADES</button>
@@ -293,10 +321,23 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   <div style="background:rgba(4,4,74,0.97);border:1px solid rgba(0,132,255,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.40);">
     <div style="font-family:var(--font-mono);font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-label);margin-bottom:14px;">Add Grade</div>
     <input id="gradeValueInput" class="inp" type="number" min="1" max="6" step="0.1" placeholder="Grade (1.0 – 6.0)" style="width:100%;margin-bottom:8px;">
-    <input id="gradeLabelInput" class="inp" type="text" placeholder="Label (e.g. Test 2, Oral…)" style="width:100%;margin-bottom:14px;" autocomplete="off">
+    <input id="gradeLabelInput" class="inp" type="text" placeholder="Label (e.g. Test 2, Oral…)" style="width:100%;margin-bottom:8px;" autocomplete="off">
+    <input id="gradeWeightInput" class="inp inp-sm" type="number" min="0.5" max="10" step="0.5" placeholder="Weight (default 1)" style="width:100%;margin-bottom:14px;">
     <div style="display:flex;gap:8px;">
       <button id="gradeConfirmBtn" class="btn btn-add" style="flex:1">✓ Save Grade</button>
       <button id="gradeCancelBtn" class="btn" style="flex:1;background:rgba(0,132,255,0.12);color:var(--text-secondary)">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Year modal -->
+<div id="newYearModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,40,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:rgba(4,4,74,0.97);border:1px solid rgba(0,132,255,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.40);">
+    <div style="font-family:var(--font-mono);font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-label);margin-bottom:14px;">New School Year</div>
+    <input id="newYearLabel" class="inp" type="text" placeholder="e.g. 2026/27" style="width:100%;margin-bottom:14px;" autocomplete="off">
+    <div style="display:flex;gap:8px;">
+      <button id="newYearConfirmBtn" class="btn btn-add" style="flex:1">✓ Create Year</button>
+      <button id="newYearCancelBtn" class="btn" style="flex:1;background:rgba(0,132,255,0.12);color:var(--text-secondary)">Cancel</button>
     </div>
   </div>
 </div>
@@ -344,14 +385,103 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   }
 
   // ================================================================
+  // YEAR MANAGEMENT
+  // ================================================================
+  function getYears() { return storeGet('acad:years') || []; }
+  function setYears(v) { storeSet('acad:years', v); }
+  function getActiveYearId() { return storeGet('acad:activeYear'); }
+  function setActiveYearId(v) { storeSet('acad:activeYear', v); }
+  function getActiveYear() {
+    const years = getYears(), id = getActiveYearId();
+    return years.find(y => y.id === id) || years[0] || null;
+  }
+  function getActiveYearIdx() {
+    const years = getYears(), id = getActiveYearId();
+    const i = years.findIndex(y => y.id === id);
+    return (i >= 0 ? i : 0);
+  }
+  function updateActiveYear(fn) {
+    const years = getYears(), i = getActiveYearIdx();
+    if (years[i]) { fn(years[i]); setYears(years); }
+  }
+
+  function currentSchoolYearLabel() {
+    const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
+    const s = m >= 9 ? y : y - 1;
+    return s + '/' + String(s + 1).slice(2);
+  }
+
+  function migrateIfNeeded() {
+    if (storeGet('acad:years')) return;
+    const subjects = storeGet('acad:grades') || [];
+    const events   = storeGet('acad:events') || [];
+    const todos    = storeGet('acad:todos')  || [];
+    const planner  = storeGet('acad:planner') || {};
+    const year = { id: uid(), label: currentSchoolYearLabel(), subjects, events, todos, planner };
+    setYears([year]);
+    setActiveYearId(year.id);
+    localStorage.removeItem('acad:grades');
+    localStorage.removeItem('acad:events');
+    localStorage.removeItem('acad:todos');
+    localStorage.removeItem('acad:planner');
+  }
+
+  function renderYearSelect() {
+    const years = getYears(), activeId = getActiveYearId();
+    const sel = document.getElementById('yearSelect');
+    sel.innerHTML = '';
+    years.forEach(y => {
+      const opt = document.createElement('option');
+      opt.value = y.id; opt.textContent = y.label;
+      if (y.id === activeId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+  document.getElementById('yearSelect').addEventListener('change', e => {
+    setActiveYearId(e.target.value);
+    renderGrades(); renderEvents(); renderTodos(); renderPlanner();
+  });
+
+  const newYearModal = document.getElementById('newYearModal');
+  function suggestNextLabel(label) {
+    const m = label.match(/^(\d{4})\/(\d{2})$/);
+    if (!m) return '';
+    const y = parseInt(m[1]) + 1;
+    return y + '/' + String(y + 1).slice(2);
+  }
+  function closeNewYearModal() { newYearModal.style.display = 'none'; }
+  document.getElementById('newYearBtn').addEventListener('click', () => {
+    const years = getYears();
+    const last = years[years.length - 1];
+    document.getElementById('newYearLabel').value = last ? suggestNextLabel(last.label) : '';
+    newYearModal.style.display = 'flex';
+    setTimeout(() => document.getElementById('newYearLabel').focus(), 80);
+  });
+  document.getElementById('newYearCancelBtn').addEventListener('click', closeNewYearModal);
+  newYearModal.addEventListener('click', e => { if (e.target === newYearModal) closeNewYearModal(); });
+  document.getElementById('newYearConfirmBtn').addEventListener('click', () => {
+    const label = document.getElementById('newYearLabel').value.trim();
+    if (!label) return;
+    const year = { id: uid(), label, subjects: [], events: [], todos: [], planner: {} };
+    const years = getYears(); years.push(year); setYears(years);
+    setActiveYearId(year.id);
+    closeNewYearModal();
+    renderYearSelect();
+    renderGrades(); renderEvents(); renderTodos(); renderPlanner();
+  });
+  document.getElementById('newYearLabel').addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();document.getElementById('newYearConfirmBtn').click();} });
+
+  // ================================================================
   // GRADES
   // ================================================================
-  function getSubjects() { return storeGet('acad:grades') || []; }
-  function setSubjects(v) { storeSet('acad:grades', v); }
+  function getSubjects() { return (getActiveYear() || { subjects: [] }).subjects || []; }
+  function setSubjects(v) { updateActiveYear(y => { y.subjects = v; }); }
 
   function avgGrade(grades) {
-    if (!grades||!grades.length) return null;
-    return grades.reduce((a,g)=>a+(+g.value),0)/grades.length;
+    if (!grades || !grades.length) return null;
+    let wSum = 0, wTotal = 0;
+    grades.forEach(g => { const w = +(g.weight || 1); wSum += +g.value * w; wTotal += w; });
+    return wTotal ? wSum / wTotal : null;
   }
   function gradeClass(v) {
     if (v === null) return '';
@@ -367,12 +497,12 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
     const listEl = document.getElementById('subjectsList');
     listEl.innerHTML = '';
 
-    // overall
-    let tSum = 0, tCnt = 0;
-    subjects.forEach(s => { (s.grades||[]).forEach(g => { tSum += +g.value; tCnt++; }); });
+    // overall (weighted)
+    let tWSum = 0, tWTotal = 0;
+    subjects.forEach(s => { (s.grades||[]).forEach(g => { const w = +(g.weight||1); tWSum += +g.value * w; tWTotal += w; }); });
     const ov = document.getElementById('overallVal');
-    if (tCnt) {
-      const avg = tSum/tCnt;
+    if (tWTotal) {
+      const avg = tWSum / tWTotal;
       ov.textContent = avg.toFixed(2);
       ov.className = 'overall-val ' + gradeClass(avg);
     } else {
@@ -407,7 +537,10 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
       grades.forEach((g, gi) => {
         const v = +g.value;
         const chip = document.createElement('span'); chip.className = 'grade-chip '+(v<4?'low':v>=5?'good':'');
-        chip.innerHTML = esc(v.toFixed(1)) + (g.label ? ' <span style="font-weight:500;opacity:0.7">'+esc(g.label)+'</span>' : '')
+        const w = +(g.weight || 1);
+        chip.innerHTML = esc(v.toFixed(1))
+          + (g.label ? ' <span style="font-weight:500;opacity:0.7">'+esc(g.label)+'</span>' : '')
+          + (w !== 1 ? ' <span style="font-size:10px;opacity:0.55">×'+w+'</span>' : '')
           + '<button class="grade-chip-del" type="button" title="Remove grade">×</button>';
         chip.querySelector('.grade-chip-del').addEventListener('click', () => {
           const ss=getSubjects(); ss[si].grades.splice(gi,1); setSubjects(ss); renderGrades();
@@ -438,6 +571,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   function openGradeModal() {
     document.getElementById('gradeValueInput').value='';
     document.getElementById('gradeLabelInput').value='';
+    document.getElementById('gradeWeightInput').value='';
     gradeModal.style.display='flex';
     setTimeout(()=>document.getElementById('gradeValueInput').focus(),80);
   }
@@ -448,9 +582,11 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
     const v = parseFloat(document.getElementById('gradeValueInput').value);
     if (isNaN(v)||v<1||v>6) { document.getElementById('gradeValueInput').style.borderColor='var(--danger)'; setTimeout(()=>document.getElementById('gradeValueInput').style.borderColor='',1200); return; }
     const lbl = document.getElementById('gradeLabelInput').value.trim();
+    const wRaw = parseFloat(document.getElementById('gradeWeightInput').value);
+    const weight = (!isNaN(wRaw) && wRaw > 0) ? wRaw : 1;
     const ss = getSubjects(); if (pendingSubjectIdx===null||!ss[pendingSubjectIdx]) return;
     if (!ss[pendingSubjectIdx].grades) ss[pendingSubjectIdx].grades=[];
-    ss[pendingSubjectIdx].grades.push({value:v,label:lbl,date:dateKey(new Date()),id:uid()});
+    ss[pendingSubjectIdx].grades.push({value:v,label:lbl,weight,date:dateKey(new Date()),id:uid()});
     setSubjects(ss); closeGradeModal(); renderGrades();
   });
 
@@ -465,8 +601,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   // ================================================================
   // CALENDAR
   // ================================================================
-  function getEvents() { return storeGet('acad:events') || []; }
-  function setEvents(v) { storeSet('acad:events', v); }
+  function getEvents()  { return (getActiveYear() || { events: [] }).events || []; }
+  function setEvents(v) { updateActiveYear(y => { y.events = v; }); }
 
   function renderEvents() {
     const events = getEvents().slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
@@ -513,8 +649,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   // ================================================================
   // TODO
   // ================================================================
-  function getTodos() { return storeGet('acad:todos') || []; }
-  function setTodos(v) { storeSet('acad:todos', v); }
+  function getTodos()  { return (getActiveYear() || { todos: [] }).todos || []; }
+  function setTodos(v) { updateActiveYear(y => { y.todos = v; }); }
 
   function renderTodos() {
     const todos = getTodos();
@@ -541,8 +677,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   // ================================================================
   // PLANNER
   // ================================================================
-  function getPlanner() { return storeGet('acad:planner') || {}; }
-  function setPlanner(v) { storeSet('acad:planner', v); }
+  function getPlanner()  { return (getActiveYear() || { planner: {} }).planner || {}; }
+  function setPlanner(v) { updateActiveYear(y => { y.planner = v; }); }
 
   let plannerWeekOffset = 0;
   let pendingPlannerDate = null;
@@ -607,12 +743,14 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   // ================================================================
   // BOOT
   // ================================================================
+  migrateIfNeeded();
+  renderYearSelect();
   renderGrades();
   renderEvents();
   renderTodos();
   renderPlanner();
 
-  window.addEventListener('storage', () => { renderGrades(); renderEvents(); renderTodos(); renderPlanner(); });
+  window.addEventListener('storage', () => { renderYearSelect(); renderGrades(); renderEvents(); renderTodos(); renderPlanner(); });
 })();
 </script>
 <script>
@@ -621,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initCloudSync({
     appKey: 'main',
     syncedPrefixes: ['goals:'],
-    syncedKeys: ['acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
+    syncedKeys: ['acad:years', 'acad:activeYear',
                  'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
                  'po_water_v1', 'goal_streak_v1', 'nw_currency'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
