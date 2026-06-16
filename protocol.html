@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFD080">
+<meta name="theme-color" content="#04044A">
 <title>Protocol — Paul's Dashboard</title>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg-page: #2e2e2e;
-  --bg-card: #e8e8e8;
-  --bg-row: #d8d8d8;
-  --border-card: rgba(210, 148, 42, 0.20);
-  --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
+  --bg-page: linear-gradient(155deg, #000675 0%, #04044A 55%, #020240 100%);
+  --bg-card: rgba(255, 255, 255, 0.07);
+  --bg-row: rgba(255, 255, 255, 0.05);
+  --border-card: rgba(0, 132, 255, 0.22);
+  --shadow-card: 0 6px 28px rgba(0, 0, 60, 0.30), 0 1px 4px rgba(0, 0, 0, 0.18);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.70);
-  --text-tertiary: rgba(255, 255, 255, 0.45);
-  --text-label: rgba(255, 255, 255, 0.48);
+  --text-secondary: rgba(200, 230, 255, 0.72);
+  --text-tertiary: rgba(160, 210, 255, 0.50);
+  --text-label: rgba(160, 210, 255, 0.52);
   --success: #2CA83C;
-  --warning: #F28200;
-  --accent: #FF6B2B;
-  --accent-orange: #FF8C1A;
+  --warning: #00E5FF;
+  --accent: #0084FF;
+  --accent-orange: #00E5FF;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --radius-card: 26px;
@@ -56,8 +56,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 
 .streak-badge {
   display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(255, 140, 26, 0.12);
-  border: 1px solid rgba(255, 140, 26, 0.26);
+  background: rgba(0, 229, 255, 0.10);
+  border: 1px solid rgba(0, 229, 255, 0.26);
   border-radius: 20px;
   padding: 3px 10px;
   font-family: var(--font-mono); font-size: 11px; font-weight: 800;
@@ -69,7 +69,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   display: flex; align-items: center; gap: 12px;
   padding: 10px 14px;
   background: var(--bg-row);
-  border: 1px solid rgba(210, 148, 42, 0.14);
+  border: 1px solid rgba(0, 132, 255, 0.16);
   border-radius: 14px;
   cursor: pointer;
   transition: background 0.15s;
@@ -83,7 +83,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .anchor-check {
   width: 22px; height: 22px; flex-shrink: 0;
   border-radius: 50%;
-  border: 2px solid rgba(210, 148, 42, 0.38);
+  border: 2px solid rgba(0, 132, 255, 0.45);
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; color: transparent;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -117,7 +117,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* === MODE TOGGLE === */
 .mode-toggle {
   display: flex; gap: 5px;
-  background: rgba(255, 243, 210, 0.70);
+  background: rgba(4, 4, 74, 0.60);
   border: 1px solid var(--border-card);
   border-radius: 18px;
   padding: 4px;
@@ -161,7 +161,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 }
 .proto-divider::after {
   content: ''; flex: 1; height: 1px;
-  background: rgba(210, 148, 42, 0.20);
+  background: rgba(0, 132, 255, 0.22);
 }
 
 /* === PROTO CARDS === */
@@ -202,7 +202,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .proto-card-body {
   display: none;
   padding: 4px 18px 18px;
-  border-top: 1px solid rgba(210, 148, 42, 0.14);
+  border-top: 1px solid rgba(0, 132, 255, 0.14);
 }
 .proto-card.open .proto-card-body {
   display: block;
@@ -232,8 +232,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .proto-return {
   display: inline-flex; align-items: center; gap: 6px;
   margin-top: 14px; padding: 8px 14px;
-  background: rgba(255, 140, 26, 0.09);
-  border: 1px solid rgba(255, 140, 26, 0.20);
+  background: rgba(0, 132, 255, 0.09);
+  border: 1px solid rgba(0, 132, 255, 0.20);
   border-radius: 12px;
   font-size: 12px; color: var(--accent-orange); font-weight: 500;
 }
@@ -251,7 +251,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .phase-focus { font-size: 12px; color: var(--text-secondary); font-style: italic; margin-top: 3px; }
 .phase-bar {
   height: 5px; border-radius: 3px;
-  background: rgba(210, 148, 42, 0.18);
+  background: rgba(0, 100, 200, 0.22);
   margin: 12px 0 10px; overflow: hidden;
 }
 .phase-bar-fill {
@@ -264,9 +264,9 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .phase-date-input {
   font-family: var(--font-mono); font-size: 12px;
   padding: 6px 10px;
-  border: 1px solid rgba(210, 148, 42, 0.30);
+  border: 1px solid rgba(0, 132, 255, 0.30);
   border-radius: 10px;
-  background: rgba(255, 240, 198, 0.70);
+  background: rgba(0, 60, 160, 0.20);
   color: var(--text-primary); outline: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -274,21 +274,14 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .phase-action-btn {
   padding: 6px 14px;
   border: none; border-radius: 10px;
-  background: rgba(255, 140, 26, 0.14); color: var(--accent-orange);
+  background: rgba(0, 132, 255, 0.14); color: var(--accent-orange);
   font-family: var(--font-mono); font-size: 11px; font-weight: 800;
   cursor: pointer; transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.phase-action-btn:active { background: rgba(255, 140, 26, 0.28); }
+.phase-action-btn:active { background: rgba(0, 132, 255, 0.28); }
 .phase-action-btn.muted { background: transparent; color: var(--text-tertiary); }
-.phase-action-btn.muted:active { background: rgba(210, 148, 42, 0.10); }
-.card, .proto-card {
-  color: #111111;
-  --text-primary: #111111;
-  --text-secondary: rgba(0, 0, 0, 0.65);
-  --text-tertiary: rgba(0, 0, 0, 0.42);
-  --text-label: rgba(0, 0, 0, 0.44);
-}
+.phase-action-btn.muted:active { background: rgba(0, 100, 200, 0.12); }
 </style>
 </head>
 <body>

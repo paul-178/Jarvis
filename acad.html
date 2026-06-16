@@ -3,28 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFD080">
+<meta name="theme-color" content="#04044A">
 <title>Academics — Paul's Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg-page: #2e2e2e;
-  --bg-card: #e8e8e8;
-  --bg-row: #d8d8d8;
-  --bg-input: rgba(255, 255, 255, 0.50);
-  --border-card: rgba(210, 148, 42, 0.20);
-  --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
+  --bg-page: linear-gradient(155deg, #000675 0%, #04044A 55%, #020240 100%);
+  --bg-card: rgba(255, 255, 255, 0.07);
+  --bg-row: rgba(255, 255, 255, 0.05);
+  --bg-input: rgba(255, 255, 255, 0.07);
+  --border-card: rgba(0, 132, 255, 0.22);
+  --shadow-card: 0 6px 28px rgba(0, 0, 60, 0.30), 0 1px 4px rgba(0, 0, 0, 0.18);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.70);
-  --text-tertiary: rgba(255, 255, 255, 0.45);
-  --text-label: rgba(255, 255, 255, 0.48);
+  --text-secondary: rgba(200, 230, 255, 0.72);
+  --text-tertiary: rgba(160, 210, 255, 0.50);
+  --text-label: rgba(160, 210, 255, 0.52);
   --success: #2CA83C;
-  --warning: #F28200;
+  --warning: #00E5FF;
   --danger: #D03030;
-  --accent: #FF6B2B;
-  --accent-orange: #FF8C1A;
+  --accent: #0084FF;
+  --accent-orange: #00E5FF;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --radius-card: 26px;
@@ -40,7 +40,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* internal tab bar */
 .acad-tabs {
   display: flex; gap: 4px;
-  background: rgba(255,244,210,0.70);
+  background: rgba(4, 4, 74, 0.60);
   border: 1px solid var(--border-card);
   border-radius: 16px; padding: 4px;
   margin-bottom: 18px;
@@ -52,8 +52,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   color: var(--text-tertiary); cursor: pointer;
   transition: background 0.15s, color 0.15s; white-space: nowrap;
 }
-.acad-tab.active { background: rgba(255,140,26,0.18); color: var(--accent-orange); }
-.acad-tab:hover:not(.active) { background: rgba(255,210,140,0.30); color: var(--text-secondary); }
+.acad-tab.active { background: rgba(0,132,255,0.22); color: var(--accent-orange); }
+.acad-tab:hover:not(.active) { background: rgba(0,100,200,0.18); color: var(--text-secondary); }
 
 .acad-section { display: none; }
 .acad-section.show { display: block; }
@@ -76,11 +76,11 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .row-input { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
 .inp {
   flex: 1 1 140px; min-width: 0; padding: 9px 13px;
-  background: var(--bg-input); border: 1.5px solid rgba(210,148,42,0.28);
+  background: var(--bg-input); border: 1.5px solid rgba(0,132,255,0.28);
   border-radius: 12px; font-family: var(--font); font-size: 13px; color: var(--text-primary);
   outline: none; transition: border-color 0.2s;
 }
-.inp:focus { border-color: rgba(255,140,26,0.60); }
+.inp:focus { border-color: rgba(0,229,255,0.60); }
 .inp::placeholder { color: var(--text-tertiary); }
 .inp-sm { flex: 0 1 90px; }
 .btn {
@@ -88,8 +88,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   font-family: var(--font); font-size: 13px; font-weight: 700;
   cursor: pointer; white-space: nowrap; transition: background 0.15s, transform 0.10s;
 }
-.btn-add { background: rgba(255,140,26,0.20); color: var(--accent-orange); }
-.btn-add:hover { background: rgba(255,140,26,0.32); }
+.btn-add { background: rgba(0,132,255,0.20); color: var(--accent-orange); }
+.btn-add:hover { background: rgba(0,132,255,0.32); }
 .btn:active { transform: scale(0.97); }
 .btn-del {
   background: transparent; border: none; color: var(--text-tertiary);
@@ -111,18 +111,18 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .grade-chip {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 4px 10px; border-radius: 99px;
-  background: rgba(255,220,130,0.35); border: 1px solid rgba(200,148,42,0.22);
+  background: rgba(0,100,200,0.18); border: 1px solid rgba(0,132,255,0.22);
   font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-primary);
 }
 .grade-chip.low  { background: rgba(208,48,48,0.12); color: var(--danger); border-color: rgba(208,48,48,0.25); }
 .grade-chip.good { background: rgba(30,144,208,0.12); color: #1E7DB8; border-color: rgba(30,144,208,0.25); }
-.grade-chip-del { background: none; border: none; cursor: pointer; color: rgba(180,80,0,0.50); font-size: 12px; padding: 0; line-height: 1; }
+.grade-chip-del { background: none; border: none; cursor: pointer; color: rgba(150,200,255,0.50); font-size: 12px; padding: 0; line-height: 1; }
 .grade-chip-del:hover { color: var(--danger); }
 .add-grade-row { display: flex; gap: 5px; align-items: center; }
 .grade-label { font-size: 12px; color: var(--text-tertiary); flex: 1; }
 .overall-bar {
   display: flex; align-items: center; gap: 12px;
-  background: rgba(255,244,210,0.80); border: 1px solid var(--border-card);
+  background: rgba(4,4,74,0.60); border: 1px solid var(--border-card);
   border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
 }
 .overall-val { font-size: 28px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
@@ -140,11 +140,11 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 }
 .event-date { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text-tertiary); min-width: 54px; }
 .event-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
-.event-subject { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: rgba(255,200,80,0.30); color: rgba(120,70,0,0.80); }
+.event-subject { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: rgba(0,132,255,0.20); color: rgba(150,210,255,0.90); }
 .event-type { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.06em; }
 .event-type-test     { background: rgba(208,48,48,0.12); color: var(--danger); }
-.event-type-deadline { background: rgba(242,130,0,0.14); color: var(--warning); }
-.event-type-other    { background: rgba(200,148,42,0.14); color: rgba(140,80,10,0.80); }
+.event-type-deadline { background: rgba(0,229,255,0.12); color: var(--warning); }
+.event-type-other    { background: rgba(0,100,200,0.14); color: rgba(150,200,255,0.80); }
 .event-past { opacity: 0.45; }
 .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; margin-top: 16px; }
 .section-header-title { font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-label); }
@@ -159,8 +159,8 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .todo-check {
   appearance: none; -webkit-appearance: none;
   width: 20px; height: 20px; flex-shrink: 0;
-  border: 1.5px solid rgba(160,110,28,0.38);
-  background: rgba(255,244,210,0.70); border-radius: 6px;
+  border: 1.5px solid rgba(0,132,255,0.45);
+  background: rgba(0,80,255,0.12); border-radius: 6px;
   cursor: pointer; transition: background 0.15s, border-color 0.15s; position: relative;
 }
 .todo-check:checked { background: var(--success); border-color: var(--success); }
@@ -174,29 +174,29 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 /* ============ PLANNER ============ */
 .planner-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 .planner-week { font-size: 14px; font-weight: 700; color: var(--text-primary); flex: 1; text-align: center; }
-.planner-nav-btn { background: rgba(255,220,130,0.35); border: 1px solid var(--border-card); border-radius: 10px; padding: 7px 12px; cursor: pointer; font-size: 14px; color: var(--text-secondary); font-family: var(--font); font-weight: 700; transition: background 0.15s; }
-.planner-nav-btn:hover { background: rgba(255,190,60,0.40); }
+.planner-nav-btn { background: rgba(0,100,200,0.18); border: 1px solid var(--border-card); border-radius: 10px; padding: 7px 12px; cursor: pointer; font-size: 14px; color: var(--text-secondary); font-family: var(--font); font-weight: 700; transition: background 0.15s; }
+.planner-nav-btn:hover { background: rgba(0,132,255,0.30); }
 .planner-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .planner-day-col { display: flex; flex-direction: column; gap: 4px; }
 .planner-day-head {
   font-family: var(--font-mono); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--text-label); text-align: center; padding: 6px 2px; border-radius: 8px;
-  background: rgba(255,240,190,0.60);
+  background: rgba(0,60,160,0.30);
 }
-.planner-day-head.today { color: var(--accent-orange); background: rgba(255,185,60,0.22); }
+.planner-day-head.today { color: var(--accent-orange); background: rgba(0,132,255,0.22); }
 .planner-session {
-  background: rgba(255,220,100,0.40); border: 1px solid rgba(210,148,42,0.30);
+  background: rgba(0,100,200,0.22); border: 1px solid rgba(0,132,255,0.28);
   border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 600; color: var(--text-primary);
   cursor: default; position: relative;
 }
-.planner-session-del { position: absolute; top: 3px; right: 4px; background: none; border: none; cursor: pointer; font-size: 11px; color: rgba(180,80,0,0.40); padding: 0; line-height: 1; display: none; }
+.planner-session-del { position: absolute; top: 3px; right: 4px; background: none; border: none; cursor: pointer; font-size: 11px; color: rgba(150,200,255,0.40); padding: 0; line-height: 1; display: none; }
 .planner-session:hover .planner-session-del { display: block; }
 .planner-add-btn {
-  background: transparent; border: 1.5px dashed rgba(210,148,42,0.28);
+  background: transparent; border: 1.5px dashed rgba(0,132,255,0.28);
   border-radius: 8px; padding: 5px; text-align: center; cursor: pointer;
-  font-size: 14px; color: rgba(180,100,0,0.35); transition: background 0.15s, color 0.15s;
+  font-size: 14px; color: rgba(100,180,255,0.40); transition: background 0.15s, color 0.15s;
 }
-.planner-add-btn:hover { background: rgba(255,210,100,0.25); color: var(--accent-orange); }
+.planner-add-btn:hover { background: rgba(0,132,255,0.15); color: var(--accent-orange); }
 
 @media (max-width: 600px) {
   .planner-grid { grid-template-columns: repeat(4, 1fr); }
@@ -204,13 +204,6 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 }
 @media (max-width: 400px) {
   .planner-grid { grid-template-columns: repeat(3, 1fr); }
-}
-.card, .subject-block {
-  color: #111111;
-  --text-primary: #111111;
-  --text-secondary: rgba(0, 0, 0, 0.65);
-  --text-tertiary: rgba(0, 0, 0, 0.42);
-  --text-label: rgba(0, 0, 0, 0.44);
 }
 </style>
 </head>
@@ -296,27 +289,27 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 </div>
 
 <!-- Add-grade modal -->
-<div id="gradeModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(60,30,0,0.35);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:rgba(255,252,235,0.97);border:1px solid rgba(210,148,42,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
+<div id="gradeModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,40,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:rgba(4,4,74,0.97);border:1px solid rgba(0,132,255,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.40);">
     <div style="font-family:var(--font-mono);font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-label);margin-bottom:14px;">Add Grade</div>
     <input id="gradeValueInput" class="inp" type="number" min="1" max="6" step="0.1" placeholder="Grade (1.0 – 6.0)" style="width:100%;margin-bottom:8px;">
     <input id="gradeLabelInput" class="inp" type="text" placeholder="Label (e.g. Test 2, Oral…)" style="width:100%;margin-bottom:14px;" autocomplete="off">
     <div style="display:flex;gap:8px;">
       <button id="gradeConfirmBtn" class="btn btn-add" style="flex:1">✓ Save Grade</button>
-      <button id="gradeCancelBtn" class="btn" style="flex:1;background:rgba(200,148,42,0.12);color:var(--text-secondary)">Cancel</button>
+      <button id="gradeCancelBtn" class="btn" style="flex:1;background:rgba(0,132,255,0.12);color:var(--text-secondary)">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- Add-session modal -->
-<div id="sessionModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(60,30,0,0.35);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:rgba(255,252,235,0.97);border:1px solid rgba(210,148,42,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
+<div id="sessionModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,40,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:rgba(4,4,74,0.97);border:1px solid rgba(0,132,255,0.30);border-radius:22px;padding:24px;width:100%;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.40);">
     <div style="font-family:var(--font-mono);font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-label);margin-bottom:14px;">Add Study Session</div>
     <input id="sessionTitle" class="inp" type="text" placeholder="e.g. Study Chapter 3, Do HW…" style="width:100%;margin-bottom:8px;" autocomplete="off">
     <input id="sessionDuration" class="inp inp-sm" type="text" placeholder="Duration (e.g. 2h)" style="width:100%;margin-bottom:14px;" autocomplete="off">
     <div style="display:flex;gap:8px;">
       <button id="sessionConfirmBtn" class="btn btn-add" style="flex:1">✓ Add</button>
-      <button id="sessionCancelBtn" class="btn" style="flex:1;background:rgba(200,148,42,0.12);color:var(--text-secondary)">Cancel</button>
+      <button id="sessionCancelBtn" class="btn" style="flex:1;background:rgba(0,132,255,0.12);color:var(--text-secondary)">Cancel</button>
     </div>
   </div>
 </div>

@@ -16,7 +16,7 @@ Contact: rowan.wisere@gmail.com
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFD080">
+<meta name="theme-color" content="#04044A">
 <title>Water Coach</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
@@ -60,16 +60,16 @@ const CONFIG = {
 
 <style>
 :root {
-  --bg: linear-gradient(155deg, #FFECD2 0%, #FFD080 55%, #F4A040 100%);
-  --bg-card: #e8e8e8;
+  --bg: linear-gradient(155deg, #000675 0%, #04044A 55%, #020240 100%);
+  --bg-card: rgba(255, 255, 255, 0.07);
   --text-1: #ffffff;
-  --text-2: rgba(255, 255, 255, 0.70);
-  --text-3: rgba(255, 255, 255, 0.45);
-  --text-4: rgba(255, 255, 255, 0.28);
-  --border: rgba(210, 148, 42, 0.22);
-  --border-strong: rgba(210, 148, 42, 0.38);
+  --text-2: rgba(200, 230, 255, 0.72);
+  --text-3: rgba(160, 210, 255, 0.50);
+  --text-4: rgba(160, 210, 255, 0.32);
+  --border: rgba(0, 132, 255, 0.22);
+  --border-strong: rgba(0, 132, 255, 0.38);
   --good: #2CA83C;
-  --warn: #F28200;
+  --warn: #00E5FF;
   --bad: #D03030;
   --info: #1A9FE0;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
@@ -78,9 +78,9 @@ const CONFIG = {
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
-  background: #2e2e2e;
+  background: linear-gradient(155deg, #000675 0%, #04044A 55%, #020240 100%);
   background-attachment: fixed;
-  color-scheme: light;
+  color-scheme: dark;
   color: var(--text-1);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -92,7 +92,7 @@ html, body {
 .day-pill {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 12px;
-  background: rgba(255, 244, 210, 0.80);
+  background: rgba(4, 4, 74,0.80);
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--text-2);
@@ -111,30 +111,30 @@ html, body {
 .icon-btn {
   width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255, 244, 210, 0.80);
+  background: rgba(4, 4, 74,0.80);
   border: 1px solid var(--border);
   border-radius: 10px; color: var(--text-2); cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.18s, color 0.18s;
 }
-.icon-btn:hover { background: rgba(255, 230, 175, 0.90); color: var(--text-1); }
+.icon-btn:hover { background: rgba(0, 100, 200,0.90); color: var(--text-1); }
 
 /* ----- Eyebrow divider ----- */
 .divider {
   display: flex; align-items: center; gap: 16px; margin-bottom: 14px;
 }
 .divider::before, .divider::after {
-  content: ''; flex: 1; height: 1px; background: rgba(210, 148, 42, 0.22);
+  content: ''; flex: 1; height: 1px; background: rgba(0, 132, 255,0.22);
 }
 .divider span {
   font-size: 11px; letter-spacing: 0.22em; font-weight: 600;
-  color: rgba(78, 44, 6, 0.65);
+  color: rgba(150, 210, 255, 0.65);
 }
 
 /* ----- Card ----- */
 .card {
   background: var(--bg-card);
-  border: 1px solid rgba(210, 148, 42, 0.18);
+  border: 1px solid rgba(0, 132, 255,0.18);
   border-radius: 18px;
   padding: 22px 20px 18px;
   margin-bottom: 14px;
@@ -160,7 +160,7 @@ html, body {
 .water-bar-wrap { position: relative; margin: 14px 0 22px; }
 .water-bar-track {
   position: relative; height: 28px; border-radius: 14px;
-  background: rgba(210, 148, 42, 0.12);
+  background: rgba(0, 132, 255,0.12);
   overflow: hidden;
 }
 .water-bar-fill {
@@ -175,7 +175,7 @@ html, body {
 }
 .water-bar-zone {
   position: absolute; top: 0; bottom: 0;
-  width: 1px; background: rgba(210, 148, 42, 0.35);
+  width: 1px; background: rgba(0, 132, 255,0.35);
 }
 .water-bar-labels {
   display: flex; justify-content: space-between;
@@ -193,23 +193,23 @@ html, body {
   display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: stretch;
 }
 .water-minus-btn {
-  background: rgba(255, 244, 210, 0.80);
+  background: rgba(4, 4, 74,0.80);
   border: none; border-radius: 16px;
   color: var(--text-1);
   font-size: 22px; font-weight: 700;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.water-minus-btn:hover { background: rgba(255, 230, 175, 0.90); }
+.water-minus-btn:hover { background: rgba(0, 100, 200,0.90); }
 .water-minus-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .water-plus-btn {
-  background: linear-gradient(180deg, #FF9B3A 0%, #F07A10 100%);
+  background: linear-gradient(180deg, #0084FF 0%, #0050FF 100%);
   color: #ffffff; border: none; border-radius: 16px;
   font-family: inherit; font-size: 16px; font-weight: 700;
   cursor: pointer; padding: 16px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), 0 4px 14px rgba(240, 122, 16, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), 0 4px 14px rgba(0, 80, 255,0.35);
 }
 .water-plus-btn:hover { transform: translateY(-1px); }
 .water-plus-btn:active { transform: scale(0.98); }
@@ -231,13 +231,13 @@ html, body {
   letter-spacing: 0.04em;
   -webkit-tap-highlight-color: transparent;
 }
-.why-toggle:hover { background: rgba(255, 238, 200, 0.65); color: var(--text-1); }
+.why-toggle:hover { background: rgba(0, 60, 160,0.65); color: var(--text-1); }
 .why-arrow { transition: transform 0.2s; font-size: 14px; }
 .why-toggle[aria-expanded="true"] .why-arrow { transform: rotate(180deg); }
 .why-body {
   margin-top: 8px;
   padding: 14px 16px;
-  background: rgba(255, 244, 210, 0.65);
+  background: rgba(4, 4, 74,0.65);
   border: 1px solid var(--border);
   border-radius: 10px;
   display: none;
@@ -267,7 +267,7 @@ html, body {
 .hist-row:last-child { border-bottom: none; }
 .hist-date { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
 .hist-bar-wrap {
-  height: 8px; background: rgba(210, 148, 42, 0.12); border-radius: 4px; overflow: hidden;
+  height: 8px; background: rgba(0, 132, 255,0.12); border-radius: 4px; overflow: hidden;
 }
 .hist-bar-fill {
   height: 100%; background: linear-gradient(90deg, var(--info), var(--good));
@@ -285,7 +285,7 @@ html, body {
 .spark-bar { fill: var(--good); }
 .spark-bar.miss { fill: rgba(255,138,138,0.5); }
 .spark-target {
-  stroke: rgba(210, 148, 42, 0.40);
+  stroke: rgba(0, 132, 255,0.40);
   stroke-width: 1; stroke-dasharray: 3 3;
   vector-effect: non-scaling-stroke;
 }
@@ -320,7 +320,7 @@ html, body {
   letter-spacing: 0.06em; text-transform: uppercase;
 }
 .field input[type="number"], .field input[type="text"], .field select {
-  background: rgba(255, 250, 230, 0.90);
+  background: rgba(255, 255, 255,0.90);
   border: 1px solid var(--border);
   color: var(--text-1);
   font-family: inherit; font-size: 14px;
@@ -330,13 +330,13 @@ html, body {
 .field input[type="number"]::-webkit-outer-spin-button,
 .field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .field input:focus, .field select:focus {
-  border-color: rgba(210, 148, 42, 0.65);
-  box-shadow: 0 0 0 2px rgba(210, 148, 42, 0.15);
+  border-color: rgba(0, 132, 255,0.65);
+  box-shadow: 0 0 0 2px rgba(0, 132, 255,0.15);
 }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .seg {
   display: flex; gap: 4px;
-  background: rgba(255, 238, 200, 0.70);
+  background: rgba(0, 60, 160,0.70);
   border: 1px solid var(--border);
   border-radius: 10px; padding: 3px;
 }
@@ -347,19 +347,19 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 .seg button.active {
-  background: linear-gradient(180deg, #FF9B3A 0%, #F07A10 100%);
+  background: linear-gradient(180deg, #0084FF 0%, #0050FF 100%);
   color: #ffffff;
 }
 
 /* ----- Stimulant search ----- */
 .search-wrap { position: relative; }
 .search-input {
-  width: 100%; background: rgba(255, 250, 230, 0.90);
+  width: 100%; background: rgba(255, 255, 255,0.90);
   border: 1px solid var(--border);
   color: var(--text-1); font-family: inherit; font-size: 14px;
   padding: 11px 14px; border-radius: 10px; outline: none;
 }
-.search-input:focus { border-color: rgba(210, 148, 42, 0.65); }
+.search-input:focus { border-color: rgba(0, 132, 255,0.65); }
 .search-results {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0;
   background: var(--bg-card);
@@ -376,7 +376,7 @@ html, body {
   cursor: pointer; font-size: 13px;
   -webkit-tap-highlight-color: transparent;
 }
-.search-result:hover { background: rgba(255, 238, 200, 0.65); }
+.search-result:hover { background: rgba(0, 60, 160,0.65); }
 .search-result-name { color: var(--text-1); font-weight: 600; }
 .search-result-meta {
   font-size: 10.5px; color: var(--text-3);
@@ -388,7 +388,7 @@ html, body {
 .sub-row {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 12px;
-  background: rgba(255, 244, 210, 0.65);
+  background: rgba(4, 4, 74,0.65);
   border: 1px solid var(--border);
   border-radius: 10px;
   flex-wrap: wrap;
@@ -402,7 +402,7 @@ html, body {
 }
 .sub-row-dose {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255, 238, 200, 0.80);
+  background: rgba(0, 60, 160,0.80);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 4px 8px;
@@ -431,24 +431,24 @@ html, body {
 /* ----- Buttons ----- */
 .btn-primary {
   width: 100%; padding: 13px;
-  border: 1px solid rgba(255, 140, 26, 0.85);
-  background: linear-gradient(180deg, #FF9B3A 0%, #F07A10 100%);
+  border: 1px solid rgba(0, 132, 255,0.85);
+  background: linear-gradient(180deg, #0084FF 0%, #0050FF 100%);
   color: #ffffff; border-radius: 12px;
   font-family: inherit; font-size: 14px; font-weight: 700;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), 0 4px 14px rgba(240, 122, 16, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), 0 4px 14px rgba(0, 80, 255,0.35);
   -webkit-tap-highlight-color: transparent;
 }
 .btn-secondary {
   padding: 11px 16px;
   border: 1px solid var(--border);
-  background: rgba(255, 244, 210, 0.80);
+  background: rgba(4, 4, 74,0.80);
   color: var(--text-1); border-radius: 10px;
   font-family: inherit; font-size: 13px; font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.btn-secondary:hover { background: rgba(255, 230, 175, 0.90); }
+.btn-secondary:hover { background: rgba(0, 100, 200,0.90); }
 .modal-actions {
   display: flex; gap: 8px; margin-top: 16px;
 }
@@ -457,13 +457,6 @@ html, body {
 @media (max-width: 480px) {
   .shell { padding: 16px 12px 60px; }
   .water-num { font-size: 48px; }
-}
-.card {
-  color: #111111;
-  --text-1: #111111;
-  --text-2: rgba(0, 0, 0, 0.65);
-  --text-3: rgba(0, 0, 0, 0.42);
-  --text-4: rgba(0, 0, 0, 0.25);
 }
 </style>
 </head>

@@ -17,11 +17,11 @@
   display: flex; justify-content: flex-end; align-items: center;
   gap: 8px;
   padding: max(10px, env(safe-area-inset-top)) 14px 8px;
-  background: rgba(22, 10, 0, 0.86);
+  background: rgba(4, 4, 74, 0.86);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   border-radius: 0 0 18px 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 0 rgba(255, 200, 100, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28), 0 1px 0 rgba(0, 132, 255, 0.12);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
 }
 
@@ -32,11 +32,11 @@
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11.5px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  white-space: nowrap; color: rgba(255, 220, 150, 0.80);
+  white-space: nowrap; color: rgba(200, 230, 255, 0.80);
 }
 .topbar-info-weather { opacity: 0.55; transition: opacity 0.4s; }
-.topbar-info-sep { color: rgba(255, 200, 100, 0.30); margin: 0 1px; }
-.topbar-info-datetime { color: rgba(255, 215, 140, 0.65); font-variant-numeric: tabular-nums; }
+.topbar-info-sep { color: rgba(100, 180, 255, 0.35); margin: 0 1px; }
+.topbar-info-datetime { color: rgba(180, 220, 255, 0.65); font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
 /* water pill */
@@ -85,20 +85,20 @@
   pointer-events: auto;
   display: flex; align-items: center;
   gap: 2px; padding: 5px;
-  background: rgba(22, 10, 0, 0.58);
+  background: rgba(4, 4, 74, 0.70);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   border-radius: 28px;
   box-shadow:
-    0 8px 32px rgba(0,0,0,0.24),
-    0 2px 8px rgba(0,0,0,0.14),
-    inset 0 1px 0 rgba(255, 200, 100, 0.10);
+    0 8px 32px rgba(0,0,0,0.32),
+    0 2px 8px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(0, 132, 255, 0.14);
 }
 .bottombar-tab {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; padding: 7px 9px 6px;
   text-decoration: none;
-  color: rgba(255, 215, 140, 0.38);
+  color: rgba(150, 200, 255, 0.50);
   font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
   border-radius: 22px;
   position: relative;
@@ -108,12 +108,12 @@
 .bottombar-tab-icon { font-size: 20px; line-height: 1; transition: transform 0.15s; }
 .bottombar-tab:active .bottombar-tab-icon { transform: scale(0.90); }
 .bottombar-tab.active {
-  color: #FF8C1A;
-  background: rgba(255, 140, 26, 0.16);
+  color: #00E5FF;
+  background: rgba(0, 132, 255, 0.20);
 }
 .bottombar-tab-badge {
   position: absolute; top: 4px; right: 3px;
-  background: #FF8C1A; color: #1C0A00;
+  background: #00E5FF; color: #000675;
   font-size: 8.5px; font-weight: 800; line-height: 1;
   padding: 2px 5px; border-radius: 10px;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;

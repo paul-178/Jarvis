@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#C8682A">
+<meta name="theme-color" content="#04044A">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Paul's Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,20 +11,20 @@
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg-page: #2e2e2e;
-  --bg-card: #e8e8e8;
-  --bg-card-hero: radial-gradient(ellipse 110% 90% at 50% -5%, #A8E040 0%, #BCEA5A 14%, #D4F090 34%, #EEF8C0 58%, #FFF8E0 78%, #FFF3D2 100%);
-  --bg-tile: #d8d8d8;
-  --border-card: rgba(210, 148, 42, 0.20);
-  --shadow-card: 0 6px 28px rgba(175, 95, 15, 0.11), 0 1px 4px rgba(140, 70, 8, 0.07);
+  --bg-page: linear-gradient(155deg, #000675 0%, #04044A 55%, #020240 100%);
+  --bg-card: rgba(255, 255, 255, 0.07);
+  --bg-card-hero: linear-gradient(145deg, #0050FF 0%, #0084FF 35%, #00AAEE 65%, #00E5FF 100%);
+  --bg-tile: rgba(255, 255, 255, 0.05);
+  --border-card: rgba(0, 132, 255, 0.22);
+  --shadow-card: 0 6px 28px rgba(0, 0, 60, 0.30), 0 1px 4px rgba(0, 0, 0, 0.18);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.70);
-  --text-tertiary: rgba(255, 255, 255, 0.45);
-  --text-label: rgba(255, 255, 255, 0.48);
-  --accent: #FF6B2B;
-  --accent-orange: #FF8C1A;
+  --text-secondary: rgba(200, 230, 255, 0.72);
+  --text-tertiary: rgba(160, 210, 255, 0.50);
+  --text-label: rgba(160, 210, 255, 0.52);
+  --accent: #0084FF;
+  --accent-orange: #00E5FF;
   --accent-green: #2CA83C;
-  --ring-fill: #F04848;
+  --ring-fill: #0084FF;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --radius-card: 28px;
@@ -41,11 +41,11 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   font-family: var(--font-mono);
   font-size: 11.5px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  white-space: nowrap; color: rgba(255, 220, 150, 0.82);
+  white-space: nowrap; color: rgba(200, 230, 255, 0.80);
 }
 .topbar-info-weather { transition: opacity 0.4s; }
-.topbar-info-sep { color: rgba(255, 200, 100, 0.32); margin: 0 1px; }
-.topbar-info-datetime { color: rgba(255, 215, 140, 0.66); font-variant-numeric: tabular-nums; }
+.topbar-info-sep { color: rgba(100, 180, 255, 0.35); margin: 0 1px; }
+.topbar-info-datetime { color: rgba(180, 220, 255, 0.65); font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .topbar-info-sep, .topbar-info-datetime { display: none; } }
 
 /* === page layout === */
@@ -55,7 +55,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .hero-card {
   background: var(--bg-card-hero);
   border-radius: var(--radius-card);
-  border: 1px solid rgba(155, 220, 60, 0.50);
+  border: 1px solid rgba(0, 229, 255, 0.40);
   box-shadow: var(--shadow-card);
   padding: 38px 28px 30px;
   margin-bottom: 14px;
@@ -71,18 +71,18 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   position: absolute;
   inset: -32px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(140, 210, 40, 0.38) 0%, rgba(140, 210, 40, 0.10) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.30) 0%, rgba(0, 132, 255, 0.10) 55%, transparent 75%);
   z-index: 0;
   pointer-events: none;
 }
 .day-ring svg { width: 100%; height: 100%; display: block; }
-.day-ring-track { fill: none; stroke: rgba(200, 165, 110, 0.22); stroke-width: 11; }
+.day-ring-track { fill: none; stroke: rgba(0, 80, 180, 0.35); stroke-width: 11; }
 .day-ring-fill {
   fill: none; stroke: var(--ring-fill);
   stroke-width: 11; stroke-linecap: round;
   transform: rotate(-90deg); transform-origin: 84px 84px;
   transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  filter: drop-shadow(0 0 10px rgba(240, 72, 72, 0.38));
+  filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.50));
 }
 .day-ring-overlay {
   position: absolute; inset: 0;
@@ -113,7 +113,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 520px;
 }
 .stat-tile {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: var(--radius-tile);
   padding: 16px 8px 14px; text-align: center;
 }
@@ -175,7 +175,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .upcoming-row {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 2px;
-  border-bottom: 1px solid rgba(200, 148, 42, 0.10);
+  border-bottom: 1px solid rgba(0, 132, 255, 0.14);
 }
 .upcoming-row:last-child { border-bottom: none; }
 .upcoming-date {
@@ -185,14 +185,14 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .upcoming-title { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
 .upcoming-tag {
   font-size: 10px; padding: 2px 7px; border-radius: 99px;
-  background: rgba(255, 200, 80, 0.32); color: rgba(120, 70, 0, 0.80); font-weight: 700;
+  background: rgba(0, 132, 255, 0.20); color: rgba(150, 210, 255, 0.90); font-weight: 700;
 }
 
 /* === GOALS MINI === */
 .goals-mini-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .goals-mini-ring { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
 .goals-mini-ring svg { width: 100%; height: 100%; display: block; }
-.gmr-track { fill: none; stroke: rgba(200, 158, 60, 0.22); stroke-width: 4; }
+.gmr-track { fill: none; stroke: rgba(0, 80, 180, 0.35); stroke-width: 4; }
 .gmr-fill {
   fill: none; stroke: var(--accent-orange);
   stroke-width: 4; stroke-linecap: round;
@@ -209,14 +209,14 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 .goals-mini-row {
   display: flex; align-items: center; gap: 9px;
   padding: 5px 2px;
-  border-bottom: 1px solid rgba(200, 148, 42, 0.10);
+  border-bottom: 1px solid rgba(0, 132, 255, 0.14);
 }
 .goals-mini-row:last-child { border-bottom: none; }
 .goals-mini-check {
   appearance: none; -webkit-appearance: none;
   width: 17px; height: 17px; flex-shrink: 0;
-  border: 1.5px solid rgba(160, 110, 28, 0.40);
-  background: rgba(255, 240, 198, 0.60);
+  border: 1.5px solid rgba(0, 132, 255, 0.45);
+  background: rgba(0, 80, 255, 0.12);
   border-radius: 5px; cursor: pointer;
   transition: background 0.15s, border-color 0.15s; position: relative;
 }
@@ -275,13 +275,6 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
 @media (max-width: 480px) {
   .home-page { padding: 8px 16px 28px; }
   .section-card { padding: 14px; }
-}
-.hero-card, .section-card, .stat-tile, .money-tile {
-  color: #111111;
-  --text-primary: #111111;
-  --text-secondary: rgba(0, 0, 0, 0.65);
-  --text-tertiary: rgba(0, 0, 0, 0.42);
-  --text-label: rgba(0, 0, 0, 0.44);
 }
 </style>
 </head>
