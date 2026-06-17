@@ -884,6 +884,7 @@ img, video, canvas, svg { max-width: 100%; }
   border: 1px solid rgba(0, 132, 255,0.18);
   border-radius: 18px;
   padding: 22px 20px 18px;
+  position: relative;
 }
 .wt-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
 .wt-num {
@@ -1280,6 +1281,7 @@ img, video, canvas, svg { max-width: 100%; }
     <div class="wt-divider"><span>WEIGHT</span></div>
 
     <div class="wt-card">
+      <button class="nv-fab" id="nvFab" aria-label="Open Nova gym coach">🧠<span class="nv-fab-dot"></span></button>
       <div class="wt-row">
         <span class="wt-num" id="wtNum">—</span>
         <span class="wt-unit" id="wtUnit">kg</span>
@@ -3515,9 +3517,9 @@ img, video, canvas, svg { max-width: 100%; }
 <style>
 /* FAB */
 .nv-fab {
-  position: fixed;
-  top: calc(env(safe-area-inset-top) + 56px);
-  right: 14px; z-index: 60;
+  position: absolute;
+  top: 14px;
+  right: 16px; z-index: 10;
   width: 46px; height: 46px; border-radius: 50%;
   background: radial-gradient(circle at 32% 28%, #e8d5ff, #7C3AED 42%, #4C1D95 100%);
   box-shadow: 0 0 20px -2px rgba(124,58,237,0.65), inset 0 -5px 12px rgba(0,0,0,.30);
@@ -3542,7 +3544,7 @@ img, video, canvas, svg { max-width: 100%; }
 /* Panel */
 .nv-panel {
   position: fixed;
-  top: 110px; right: 14px; z-index: 59;
+  top: 160px; right: 14px; z-index: 59;
   width: min(340px, calc(100vw - 28px));
   max-height: 66vh;
   background: rgba(17,16,22,0.97);
@@ -3681,9 +3683,6 @@ img, video, canvas, svg { max-width: 100%; }
 }
 .nv-send:active { transform: scale(0.94); }
 </style>
-
-<!-- FAB -->
-<button class="nv-fab" id="nvFab" aria-label="Open Nova gym coach">🧠<span class="nv-fab-dot"></span></button>
 
 <!-- Panel -->
 <div class="nv-panel" id="nvPanel" aria-label="Nova gym coach">
