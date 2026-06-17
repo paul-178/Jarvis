@@ -927,6 +927,8 @@ img, video, canvas, svg { max-width: 100%; }
 .wt-grid { stroke: rgba(0, 132, 255,0.10); stroke-width: 1; }
 .wt-area { fill: url(#wtFill); }
 .wt-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.wt-line-sparse { opacity: 0.55; stroke-dasharray: 5 3; }
+.wt-area-sparse { opacity: 0.4; }
 .wt-avg-line { fill: none; stroke: rgba(0,132,255,0.45); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.6; }
 .wt-dot { fill: var(--accent); stroke: var(--bg-card); stroke-width: 1.5; }
 .wt-dot-today { fill: #00E5FF; stroke: var(--accent); stroke-width: 2; }
@@ -1299,14 +1301,11 @@ img, video, canvas, svg { max-width: 100%; }
         <svg class="wt-chart" viewBox="0 0 320 130" preserveAspectRatio="none">
           <defs>
             <linearGradient id="wtFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#6ee7b7" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#6ee7b7" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#0084FF" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#0084FF" stop-opacity="0"/>
             </linearGradient>
             <filter id="wtGlow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <line class="wt-grid" x1="0" y1="20" x2="320" y2="20"></line>
-          <line class="wt-grid" x1="0" y1="65" x2="320" y2="65"></line>
-          <line class="wt-grid" x1="0" y1="110" x2="320" y2="110"></line>
           <g id="wtChartContent"></g>
         </svg>
         <div class="wt-meta" id="wtMeta">0 entries</div>
@@ -2642,13 +2641,28 @@ img, video, canvas, svg { max-width: 100%; }
   }
   function wtSmoothPath(points) {
     if (!points.length) return '';
-    if (points.length === 1) return 'M ' + points[0].x + ' ' + points[0].y;
+    if (points.length === 1) return 'M ' + points[0].x.toFixed(2) + ' ' + points[0].y.toFixed(2);
     let d = 'M ' + points[0].x.toFixed(2) + ' ' + points[0].y.toFixed(2);
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i-1], curr = points[i];
-      const cx = (prev.x + curr.x) / 2;
-      d += ' Q ' + cx.toFixed(2) + ' ' + prev.y.toFixed(2) + ', ' + cx.toFixed(2) + ' ' + ((prev.y + curr.y)/2).toFixed(2);
-      d += ' T ' + curr.x.toFixed(2) + ' ' + curr.y.toFixed(2);
+    if (points.length < 4) {
+      // Straight lines — smoothing with too few points creates fake bends
+      for (let i = 1; i < points.length; i++) {
+        d += ' L ' + points[i].x.toFixed(2) + ' ' + points[i].y.toFixed(2);
+      }
+    } else {
+      // Catmull-Rom → cubic bezier: gentle natural curve, no overshoot
+      for (let i = 1; i < points.length; i++) {
+        const p0 = points[Math.max(0, i - 2)];
+        const p1 = points[i - 1];
+        const p2 = points[i];
+        const p3 = points[Math.min(points.length - 1, i + 1)];
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        d += ' C ' + cp1x.toFixed(2) + ' ' + cp1y.toFixed(2)
+               + ' ' + cp2x.toFixed(2) + ' ' + cp2y.toFixed(2)
+               + ' ' + p2.x.toFixed(2) + ' ' + p2.y.toFixed(2);
+      }
     }
     return d;
   }
@@ -2729,37 +2743,64 @@ img, video, canvas, svg { max-width: 100%; }
   function wtRenderChart() {
     const recent = wtEntries.slice(-30);
     const weights = recent.map(e => e.weight);
-    const min = Math.min.apply(null, weights);
-    const max = Math.max.apply(null, weights);
-    const pad = Math.max((max - min) * 0.15, 0.5);
-    const yMin = min - pad, yMax = max + pad;
+    const dataMin = Math.min.apply(null, weights);
+    const dataMax = Math.max.apply(null, weights);
+    const range = dataMax - dataMin;
+    // Padding: 20% of range, but never less than 2% of body weight so the
+    // chart has breathing room even when all values are nearly identical.
+    const pad = Math.max(range * 0.20, dataMax * 0.02);
+    const yMin = dataMin - pad, yMax = dataMax + pad;
     const xLeft = 8, xRight = 312, yTop = 20, yBot = 110;
     const xRange = xRight - xLeft, yRange = yBot - yTop;
-    const xFor = (i) => recent.length === 1 ? xRight : xLeft + (i / (recent.length - 1)) * xRange;
+    const xFor = (i) => recent.length === 1 ? (xLeft + xRight) / 2 : xLeft + (i / (recent.length - 1)) * xRange;
     const yFor = (w) => yBot - ((w - yMin) / (yMax - yMin)) * yRange;
     const points = recent.map((e, i) => ({ x: xFor(i), y: yFor(e.weight) }));
+    const sparse = recent.length < 4;
+
+    // Dynamic gridlines — 3 evenly-spaced horizontals matching the y-axis
+    let html = '';
+    for (let n = 0; n <= 2; n++) {
+      const gy = (yTop + (n / 2) * yRange).toFixed(1);
+      html += '<line class="wt-grid" x1="' + xLeft + '" y1="' + gy + '" x2="' + xRight + '" y2="' + gy + '"/>';
+    }
+
+    // 7-day moving avg — only meaningful with 5+ entries
+    if (recent.length >= 5) {
+      const avgPoints = recent.map((_, i) => {
+        const start = Math.max(0, i - 6);
+        const win = recent.slice(start, i + 1);
+        const avg = win.reduce((s, p) => s + p.weight, 0) / win.length;
+        return { x: xFor(i), y: yFor(avg) };
+      });
+      html += '<path class="wt-avg-line" d="' + wtSmoothPath(avgPoints) + '"></path>';
+    }
+
+    // Area + line (subdued when sparse)
     const linePath = wtSmoothPath(points);
-    const areaPath = linePath + ' L ' + points[points.length - 1].x.toFixed(2) + ' ' + yBot + ' L ' + points[0].x.toFixed(2) + ' ' + yBot + ' Z';
-    // 7d moving avg
-    const avgPoints = recent.map((_, i) => {
-      const start = Math.max(0, i - 6);
-      const win = recent.slice(start, i + 1);
-      const avg = win.reduce((s, p) => s + p.weight, 0) / win.length;
-      return { x: xFor(i), y: yFor(avg) };
-    });
-    const avgPath = wtSmoothPath(avgPoints);
-    let html = '<path class="wt-avg-line" d="' + avgPath + '"></path>'
-             + '<path class="wt-area" d="' + areaPath + '"></path>'
-             + '<path class="wt-line" filter="url(#wtGlow)" d="' + linePath + '"></path>';
+    const areaPath = linePath
+      + ' L ' + points[points.length - 1].x.toFixed(2) + ' ' + yBot
+      + ' L ' + points[0].x.toFixed(2) + ' ' + yBot + ' Z';
+    html += '<path class="wt-area' + (sparse ? ' wt-area-sparse' : '') + '" d="' + areaPath + '"></path>';
+    html += '<path class="wt-line' + (sparse ? ' wt-line-sparse' : '') + '" filter="url(#wtGlow)" d="' + linePath + '"></path>';
+
+    // Dots at every data point
     points.forEach((p, i) => {
-      const cls = (i === points.length - 1) ? 'wt-dot-today' : 'wt-dot';
-      const r = (i === points.length - 1) ? 5 : 3;
-      html += '<circle class="' + cls + '" cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + r + '"/>';
+      const isLast = i === points.length - 1;
+      html += '<circle class="' + (isLast ? 'wt-dot-today' : 'wt-dot') + '"'
+            + ' cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '"'
+            + ' r="' + (isLast ? 5 : 3) + '"/>';
     });
+
     $('wtChartContent').innerHTML = html;
     $('wtYAxisMax').textContent = yMax.toFixed(1);
     $('wtYAxisMin').textContent = yMin.toFixed(1);
-    $('wtMeta').textContent = wtEntries.length + ' ' + (wtEntries.length === 1 ? 'entry' : 'entries') + ' · last ' + recent.length + ' days';
+    $('wtMeta').textContent = wtEntries.length + ' ' + (wtEntries.length === 1 ? 'entry' : 'entries')
+      + ' · last ' + recent.length + ' days'
+      + (sparse ? ' · log more days to see your trend' : '');
+
+    // Show/hide avg legend item based on whether it was rendered
+    const avgLegend = $('wtLegend').querySelector('.wt-legend-item:last-child');
+    if (avgLegend) avgLegend.style.opacity = recent.length >= 5 ? '1' : '0.25';
   }
 
   function wtRenderDelta() {
