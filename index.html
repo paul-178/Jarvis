@@ -371,6 +371,42 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   transition: transform .10s;
 }
 .nova-composer button:active { transform: scale(.94); }
+
+/* === FITBIT AIR CARD === */
+.fb-card { margin-bottom: 12px; padding: 18px 24px 14px; }
+.fb-badge {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary);
+  background: rgba(0,132,255,0.10); border: 1px solid rgba(0,132,255,0.20);
+  padding: 3px 9px; border-radius: 99px;
+}
+.fb-rings {
+  display: flex; justify-content: space-around;
+  align-items: flex-start; padding: 10px 0 6px;
+}
+.fb-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.fb-ring { position: relative; width: 84px; height: 84px; }
+.fb-ring svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.fb-ring-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.fb-val {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.03em;
+  color: var(--text-primary); line-height: 1;
+}
+.fb-pct { font-size: 12px; font-weight: 700; color: var(--text-secondary); align-self: flex-end; margin-bottom: 2px; }
+.fb-label {
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 800;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-label);
+}
+.fb-track { fill: none; stroke-width: 8; }
+.fb-arc   { fill: none; stroke-width: 8; stroke-linecap: round; }
+.fb-sync-row {
+  text-align: center; font-size: 10.5px; color: var(--text-tertiary);
+  font-style: italic; padding-top: 6px; font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
 </style>
 </head>
 <body>
@@ -412,6 +448,75 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
         <div class="stat-tile-label">NET WORTH</div>
       </div>
     </div>
+  </div>
+
+  <!-- FITBIT AIR CARD — mock data, ready to wire to real device -->
+  <div class="section-card fb-card">
+    <div class="section-card-header">
+      <span class="section-icon">⌚</span>
+      <span class="section-card-title">FITBIT AIR</span>
+      <span class="fb-badge">AWAITING DEVICE</span>
+    </div>
+
+    <div class="fb-rings">
+      <!-- Recovery -->
+      <div class="fb-ring-wrap">
+        <div class="fb-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="fb-track" cx="50" cy="50" r="38" style="stroke:rgba(34,208,122,0.15)"/>
+            <circle class="fb-arc" id="fbArcRecovery" cx="50" cy="50" r="38"
+                    stroke="#22D07A" transform="rotate(-90 50 50)"
+                    style="filter:drop-shadow(0 0 7px #22D07A)"/>
+            <circle id="fbDotRecovery" cx="50" cy="12" r="4.5"
+                    fill="#22D07A" style="filter:drop-shadow(0 0 6px #22D07A)"/>
+          </svg>
+          <div class="fb-ring-inner">
+            <span class="fb-val" id="fbValRecovery">—</span>
+            <span class="fb-pct">%</span>
+          </div>
+        </div>
+        <span class="fb-label">RECOVERY</span>
+      </div>
+
+      <!-- Sleep -->
+      <div class="fb-ring-wrap">
+        <div class="fb-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="fb-track" cx="50" cy="50" r="38" style="stroke:rgba(129,140,248,0.15)"/>
+            <circle class="fb-arc" id="fbArcSleep" cx="50" cy="50" r="38"
+                    stroke="#818CF8" transform="rotate(-90 50 50)"
+                    style="filter:drop-shadow(0 0 7px #818CF8)"/>
+            <circle id="fbDotSleep" cx="50" cy="12" r="4.5"
+                    fill="#818CF8" style="filter:drop-shadow(0 0 6px #818CF8)"/>
+          </svg>
+          <div class="fb-ring-inner">
+            <span class="fb-val" id="fbValSleep">—</span>
+            <span class="fb-pct">%</span>
+          </div>
+        </div>
+        <span class="fb-label">SLEEP</span>
+      </div>
+
+      <!-- Strain — numeric display (0–21 scale, not a natural %) -->
+      <div class="fb-ring-wrap">
+        <div class="fb-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="fb-track" cx="50" cy="50" r="38" style="stroke:rgba(251,146,60,0.15)"/>
+            <circle class="fb-arc" id="fbArcStrain" cx="50" cy="50" r="38"
+                    stroke="#FB923C" transform="rotate(-90 50 50)"
+                    style="filter:drop-shadow(0 0 7px #FB923C)"/>
+            <circle id="fbDotStrain" cx="50" cy="12" r="4.5"
+                    fill="#FB923C" style="filter:drop-shadow(0 0 6px #FB923C)"/>
+          </svg>
+          <div class="fb-ring-inner">
+            <span class="fb-val" id="fbValStrain">—</span>
+          </div>
+        </div>
+        <span class="fb-label">STRAIN</span>
+      </div>
+    </div>
+
+    <div class="fb-sync-row" id="fbSyncRow">NOT YET CONNECTED</div>
   </div>
 
   <!-- SECTION ROW -->
@@ -762,6 +867,40 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
     if (tCnt) document.getElementById('statGrade').textContent = (tSum/tCnt).toFixed(1);
   }
 
+  // ─── FITBIT AIR ────────────────────────────────────────────────────────────
+  // MOCK DATA — replace with real Fitbit API values when device is connected.
+  // Single source of truth: swap these three numbers and the rings update.
+  const fitbitData = { recovery: 72, sleep: 81, strain: 9.4 };
+
+  function renderFitbitCard() {
+    const CIRC = 2 * Math.PI * 38; // circumference for r=38
+
+    function applyRing(arcId, dotId, pct) {
+      const arc = document.getElementById(arcId);
+      const dot = document.getElementById(dotId);
+      if (!arc || !dot) return;
+      const c = Math.max(0, Math.min(100, pct));
+      arc.setAttribute('stroke-dasharray', CIRC.toFixed(2));
+      arc.setAttribute('stroke-dashoffset', (CIRC * (1 - c / 100)).toFixed(2));
+      // Dot at the leading edge of the arc (arc starts at 12 o'clock = -90°)
+      const rad = (-90 + c * 3.6) * (Math.PI / 180);
+      dot.setAttribute('cx', (50 + 38 * Math.cos(rad)).toFixed(2));
+      dot.setAttribute('cy', (50 + 38 * Math.sin(rad)).toFixed(2));
+    }
+
+    applyRing('fbArcRecovery', 'fbDotRecovery', fitbitData.recovery);
+    applyRing('fbArcSleep',    'fbDotSleep',    fitbitData.sleep);
+    applyRing('fbArcStrain',   'fbDotStrain',   (fitbitData.strain / 21) * 100);
+
+    const vr = document.getElementById('fbValRecovery');
+    const vs = document.getElementById('fbValSleep');
+    const vt = document.getElementById('fbValStrain');
+    if (vr) vr.textContent = Math.round(fitbitData.recovery);
+    if (vs) vs.textContent = Math.round(fitbitData.sleep);
+    if (vt) vt.textContent = fitbitData.strain.toFixed(1);
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   function renderAll() {
     updateDayRing();
     loadGoalsMini();
@@ -769,6 +908,7 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
     loadGradesMini();
     readNetWorthStat();
     readSubsStat();
+    renderFitbitCard();
   }
 
   renderAll();
