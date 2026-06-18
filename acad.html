@@ -753,21 +753,25 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   renderPlanner();
 
   window.addEventListener('storage', () => { renderYearSelect(); renderGrades(); renderEvents(); renderTodos(); renderPlanner(); });
-})();
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  if (typeof initCloudSync !== 'function') return;
-  initCloudSync({
-    appKey: 'main',
-    syncedPrefixes: ['goals:'],
-    syncedKeys: ['acad:years', 'acad:activeYear',
-                 'acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
-                 'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
-                 'po_water_v1', 'goal_streak_v1', 'nw_currency'],
-    onApplied: function () { migrateIfNeeded(); window.dispatchEvent(new Event('storage')); }
+
+  // initCloudSync is defined in sync.js (deferred), so wait for DOMContentLoaded.
+  // Keeping this INSIDE the IIFE so onApplied can reach migrateIfNeeded and the
+  // render functions — calling it from a separate <script> block put them out of
+  // scope and onApplied silently threw a ReferenceError every time, meaning
+  // the UI never re-rendered after sync and migration never ran.
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof initCloudSync !== 'function') return;
+    initCloudSync({
+      appKey: 'main',
+      syncedPrefixes: ['goals:'],
+      syncedKeys: ['acad:years', 'acad:activeYear',
+                   'acad:grades', 'acad:events', 'acad:todos', 'acad:planner',
+                   'nw:bank', 'nw:stocks', 'nw:crypto', 'nw:other', 'subs',
+                   'goal_streak_v1', 'nw_currency'],
+      onApplied: function () { migrateIfNeeded(); window.dispatchEvent(new Event('storage')); }
+    });
   });
-});
+})();
 </script>
 </body>
 </html>
