@@ -381,21 +381,22 @@ body { background: var(--bg-page); color: var(--text-primary); overflow-x: hidde
   padding: 3px 9px; border-radius: 99px;
 }
 .fb-rings {
-  display: flex; justify-content: space-around;
-  align-items: flex-start; padding: 10px 0 6px;
+  display: flex; justify-content: center;
+  align-items: flex-start; gap: 36px; padding: 10px 0 6px;
 }
-.fb-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 7px; }
-.fb-ring { position: relative; width: 84px; height: 84px; }
+.fb-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.fb-ring { position: relative; width: 110px; height: 110px; }
 .fb-ring svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .fb-ring-inner {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: baseline; justify-content: center;
+  padding-top: 36px; /* vertically centre within the ring */
 }
 .fb-val {
-  font-size: 22px; font-weight: 800; letter-spacing: -0.03em;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.03em;
   color: var(--text-primary); line-height: 1;
 }
-.fb-pct { font-size: 12px; font-weight: 700; color: var(--text-secondary); align-self: flex-end; margin-bottom: 2px; }
+.fb-pct { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-left: 1px; }
 .fb-label {
   font-family: var(--font-mono); font-size: 9.5px; font-weight: 800;
   letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-label);
