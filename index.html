@@ -1104,7 +1104,11 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('novaSend').addEventListener('click', () => ask(input.value));
   input.addEventListener('keydown', e => { if (e.key === 'Enter') ask(input.value); });
 
-  addCoach('Hey — I\'m <b>Nova</b>. Paste your Anthropic key above, then ask me about your goals, grades, finances, or anything on your dashboard.');
+  if (savedKey()) {
+    addCoach('Hey — I\'m <b>Nova</b>. Ask me about your goals, grades, finances, or anything on your dashboard.');
+  } else {
+    addCoach('Hey — I\'m <b>Nova</b>. Paste your Anthropic key above (🔑), then ask me about your goals, grades, finances, or anything on your dashboard.');
+  }
 })();
 </script>
 </body>
